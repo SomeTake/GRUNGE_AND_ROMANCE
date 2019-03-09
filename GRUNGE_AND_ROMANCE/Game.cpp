@@ -13,15 +13,8 @@
 #include "Babel.h"
 #include "Kumatyang.h"
 #include "YakiYaki.h"
-<<<<<<< HEAD:GRANGE_AND_ROMANCE/Game.cpp
-<<<<<<< HEAD
-#include "Meshwall.h"
-=======
 #include "Meshfield.h"
->>>>>>> b96be5230b4eadb2b0e522d1e41ab817c456e042:GRUNGE_AND_ROMANCE/Game.cpp
 #include "Effect.h"
-=======
->>>>>>> parent of e81f7cc... Effect
 
 //*****************************************************************************
 // ƒOƒ[ƒoƒ‹•Ï”
@@ -73,15 +66,8 @@ void UpdateGame(void)
 	UpdateBabel();
 	UpdateKumatyang();
 	UpdateYakiYaki();
-<<<<<<< HEAD:GRANGE_AND_ROMANCE/Game.cpp
-<<<<<<< HEAD
-	UpdateMeshWall();
-=======
 	UpdateMeshField();
->>>>>>> b96be5230b4eadb2b0e522d1e41ab817c456e042:GRUNGE_AND_ROMANCE/Game.cpp
 	UpdateEffect();
-=======
->>>>>>> parent of e81f7cc... Effect
 
 }
 
@@ -98,10 +84,7 @@ void DrawGame(void)
 	DrawBabel();
 	DrawKumatyang();
 	DrawYakiYaki();
-<<<<<<< HEAD
 	DrawEffect();
-=======
->>>>>>> parent of e81f7cc... Effect
 
 }
 
