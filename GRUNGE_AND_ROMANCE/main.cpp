@@ -17,6 +17,7 @@
 #include "Onna.h"
 #include "Effect.h"
 #include "Blackhole.h"
+#include "Sound.h"
 
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
@@ -321,6 +322,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// “ü—Íˆ—‚Ì‰Šú‰»
 	InitInput(hInstance, hWnd);
+	Initialize_Sound(hWnd);
 	InitCamera();
 	InitLight();
 	InitOpening();

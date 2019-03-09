@@ -15,6 +15,7 @@
 #include "Blackhole.h"
 #include "Debugproc.h"
 #include "Game.h"
+#include "Sound.h"
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -358,6 +359,7 @@ void ControlPlayer(int pn)
 		// ジャブ PS4□
 		if (GetKeyboardTrigger(DIK_J) || IsButtonTriggered(pn, BUTTON_A))
 		{
+			Play_Sound(SOUND_TYPE_AGONY, SOUND_PLAY_TYPE_PLAY);
 			playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Jab, Data[Jab].Spd);
 		}
 		// キック PS4×
