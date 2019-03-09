@@ -1,0 +1,12 @@
+System.ArgumentException: パスの形式が無効です。
+   場所 System.IO.Path.LegacyNormalizePath(String path, Boolean fullCheck, Int32 maxPathLength, Boolean expandShortPaths)
+   場所 System.IO.Path.NormalizePath(String path, Boolean fullCheck, Int32 maxPathLength, Boolean expandShortPaths)
+   場所 System.IO.Path.InternalGetDirectoryName(String path)
+   場所 Effekseer.GUI.Dock.FileViewer.OnAfterLoad(Object sender, EventArgs e)
+   場所 System.EventHandler.Invoke(Object sender, EventArgs e)
+   場所 Effekseer.Core.New()
+   場所 Effekseer.GUI.Commands.<>c.<New>b__1_0()
+   場所 Effekseer.GUI.Dialog.SaveOnDisposing.Update()
+   場所 Effekseer.GUI.Manager.Update()
+   場所 Effekseer.Program.Exec(Boolean gui, String input, String output, String export, Single magnification)
+   場所 Effekseer.Program.Main(String[] args)
