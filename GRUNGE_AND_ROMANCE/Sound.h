@@ -14,18 +14,28 @@
 //====================================================================================================================================================================================
 // マクロ定義
 //====================================================================================================================================================================================
-#define SOUND_FILE_AGONY ("data/SOUND/SE/Item.wav")	//	サウンドファイル
-#define SOUND_FADE_VALUE (25)					//	サウンドのフェード値
-#define SOUND_MAX (SOUND_TYPE_MAX)				//	サウンドの最大数
-#define SOUND_VOLUME_MIN (-10000)				//	サウンドの音量最小値
-#define SOUND_VOLUME_MAX (0)					//	サウンドの音量最大値
+#define SOUND_FILE_ATTACK_ITEM ("data/SOUND/SE/Attack_Item_Extinction.wav")	//	サウンドファイル
+#define SOUND_FILE_ATTACK_KICK ("data/SOUND/SE/Attack_Kick_Jeize.wav")		//	サウンドファイル
+#define SOUND_FILE_ATTACK_PUNCH ("data/SOUND/SE/Attack_Punch_Foise.wav")	//	サウンドファイル
+#define SOUND_FILE_ITEM_PICK ("data/SOUND/SE/Item_Pick.wav")				//	サウンドファイル
+#define SOUND_FILE_KNOCK_DOWN ("data/SOUND/SE/Knock_Down.wav")				//	サウンドファイル
+#define SOUND_FILE_KNOCK_DOWN_BOSS ("data/SOUND/SE/Knock_Down_Boss.wav")	//	サウンドファイル
+#define SOUND_FADE_VALUE (25)												//	サウンドのフェード値
+#define SOUND_MAX (SOUND_TYPE_MAX)											//	サウンドの最大数
+#define SOUND_VOLUME_MIN (-10000)											//	サウンドの音量最小値
+#define SOUND_VOLUME_MAX (0)												//	サウンドの音量最大値
 //====================================================================================================================================================================================
 // 列挙型定義
 //====================================================================================================================================================================================
 enum SOUND_TYPE
 {
-	SOUND_TYPE_AGONY,	//	断末魔
-	SOUND_TYPE_MAX,		//	定数の最大値
+	SOUND_TYPE_ATTACK_ITEM,		//	与ダメ：アイテム
+	SOUND_TYPE_ATTACK_KICK,		//	与ダメ：キック
+	SOUND_TYPE_ATTACK_PUNCH,	//	与ダメ：パンチ
+	SOUND_TYPE_ITEM_PICK,		//	アイテム取得
+	SOUND_TYPE_KNOCK_DOWN,		//	ノックダウン
+	SOUND_TYPE_KNOCK_DOWN_BOSS,	//	ノックダウン：ボス
+	SOUND_TYPE_MAX,				//	定数の最大値
 };
 enum SOUND_PLAY_TYPE
 {
@@ -67,7 +77,12 @@ typedef struct
 	bool Pause_Flag[SOUND_MAX];						//	一時停止フラグ
 	int Volume[SOUND_MAX] =							//	音量
 	{
-		DSBVOLUME_MAX,	//	SOUND_TYPE_AGONY
+		DSBVOLUME_MAX,	//	SOUND_TYPE_ATTACK_ITEM
+		DSBVOLUME_MAX,	//	SOUND_TYPE_ATTACK_KICK
+		DSBVOLUME_MAX,	//	SOUND_TYPE_ATTACK_PUNCH
+		DSBVOLUME_MAX,	//	SOUND_TYPE_ITEM_PICK
+		DSBVOLUME_MAX,	//	SOUND_TYPE_KNOCK_DOWN
+		DSBVOLUME_MAX,	//	SOUND_TYPE_KNOCK_DOWN_BOSS
 	};
 }SOUND;
 //====================================================================================================================================================================================
@@ -79,43 +94,15 @@ HRESULT Initialize_Sound(HWND Window_Handle);
 // Release
 void Release_Sound(void);
 
-// Update
-void Update_Sound(void);
-void Update_Sound_Fade_In(int Sound_Index);
-void Update_Sound_Fade_Out(int Sound_Index);
-
 // Load
 LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index);
 
 // Play
 void Play_Sound(int Sound_Index, int Sound_Flag);
 
-// Pause
-void Pause_Sound(int Sound_Index);
-
 // Stop
 void Stop_Sound(int Sound_Index);
 
-// Check
-bool Check_Play_Flag_Sound(int Sound_Index);
-void Check_Play_Flag_All_Sound(void);
-
-// Set
-void Set_Pause_Sound(void);
-void Set_Re_Play_Sound(void);
-void Set_Sound_Fade(int Sound_Index, int Sound_Fade_Type);
-void Set_Sound_Volume(int Sound_Index, int Sound_Volume_Type);
-
 // Get
-void Get_Play_Position_Sound(int Sound_Index);
 SOUND *Get_Sound(void);
-
-//// Debug
-//#ifdef _DEBUG
-//void Draw_Debug_Sound(DEBUG *Debug);
-//void Draw_Debug_Sound_Opening(void);
-//void Draw_Debug_Sound_Title(void);
-//void Draw_Debug_Sound_Game(void);
-//void Draw_Debug_Sound_Ending(void);
-//#endif
 #endif

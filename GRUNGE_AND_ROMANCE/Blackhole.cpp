@@ -6,6 +6,7 @@
 //=============================================================================
 #include "Struct.h"
 #include "Blackhole.h"
+#include "Sound.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -111,6 +112,7 @@ void UpdateBlackhole(void)
 			// HP0Ç…Ç»Ç¡ÇΩÇÁè¡ñ≈
 			if (blackholeWk[en].HPzan == 0)
 			{
+				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
 				blackholeWk[en].use = false;
 			}
 		}

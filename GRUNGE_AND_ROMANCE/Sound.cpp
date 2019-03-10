@@ -16,10 +16,6 @@
 //====================================================================================================================================================================================
 SOUND Sound_State;
 //====================================================================================================================================================================================
-// 領域 - 取得
-//====================================================================================================================================================================================
-#pragma region Initialize
-//====================================================================================================================================================================================
 // サウンドの初期化
 // 関数名：HRESULT Initialize_Sound
 // 戻り値：HRESULT
@@ -43,7 +39,6 @@ HRESULT Initialize_Sound(HWND Window_Handle)
 	)))
 	{
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_CREATE_SOUND);
 	}
 
 	// 協調モードを設定( フォアグラウンド&非排他モード )
@@ -54,7 +49,6 @@ HRESULT Initialize_Sound(HWND Window_Handle)
 	)))
 	{
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_SETTING_COOPERATION_MODE);
 	}
 
 	// サウンドの読み込み
@@ -66,11 +60,7 @@ HRESULT Initialize_Sound(HWND Window_Handle)
 	// 正常終了
 	return S_OK;
 }
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 解放
-//====================================================================================================================================================================================
-#pragma region Release
+
 //====================================================================================================================================================================================
 // サウンドの解放
 // 関数名：void Release_Sound
@@ -78,130 +68,11 @@ HRESULT Initialize_Sound(HWND Window_Handle)
 //====================================================================================================================================================================================
 void Release_Sound(void)
 {
-	//Start_Critical_Section();
 	SAFE_RELEASE(Sound_State.Direct_Sound);
-	//End_Critical_Section();
-
-	return;
-}
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 更新
-//====================================================================================================================================================================================
-#pragma region Update
-//====================================================================================================================================================================================
-// サウンドの更新
-// 関数名：void Update_Sound
-// 戻り値：void
-//====================================================================================================================================================================================
-void Update_Sound(void)
-{
-	// フェード処理
-	for (int i = 0; i < SOUND_MAX; i++)
-	{
-		if ((Sound_State.Fade_Type[i] != SOUND_FADE_TYPE_NONE) && (Sound_State.Fade_Type[i] == SOUND_FADE_TYPE_FADE_IN))
-		{
-			// フェードイン
-			Update_Sound_Fade_In(i);
-		}
-		else if ((Sound_State.Fade_Type[i] != SOUND_FADE_TYPE_NONE) && (Sound_State.Fade_Type[i] == SOUND_FADE_TYPE_FADE_OUT))
-		{
-			// フェードアウト
-			Update_Sound_Fade_Out(i);
-		}
-	}
 
 	return;
 }
 
-//====================================================================================================================================================================================
-// サウンドの更新( フェードイン )
-// 関数名：void Update_Sound_Fade_In
-// 戻り値：void
-// 引数 1：int
-//====================================================================================================================================================================================
-void Update_Sound_Fade_In(int Sound_Index)
-{
-	// 早期リターン
-	if (!Sound_State.Fade_Switch[Sound_Index])
-	{
-		return;
-	}
-
-	if (Sound_State.Setting_Volume.Max <= Sound_State.Volume[Sound_Index])
-	{
-		// 音量の設定
-		Sound_State.Sound_Buffer[Sound_Index]->SetVolume(Sound_State.Volume[Sound_Index]);
-		return;
-	}
-
-	Sound_State.Volume[Sound_Index] += SOUND_FADE_VALUE;
-
-	if (Sound_State.Setting_Volume.Max > Sound_State.Volume[Sound_Index])
-	{
-		// 音量の設定
-		Sound_State.Sound_Buffer[Sound_Index]->SetVolume(Sound_State.Volume[Sound_Index]);
-		return;
-	}
-
-	Sound_State.Fade_Switch[Sound_Index] = false;
-	Sound_State.Fade_Type[Sound_Index] = SOUND_FADE_TYPE_NONE;
-	Sound_State.Volume[Sound_Index] = Sound_State.Setting_Volume.Max;
-
-	//Set_Switch(SWITCH_TYPE_SOUND_FADE, false);
-
-	// 音量の設定
-	Sound_State.Sound_Buffer[Sound_Index]->SetVolume(Sound_State.Volume[Sound_Index]);
-
-	return;
-}
-
-//====================================================================================================================================================================================
-// サウンドの更新( フェードアウト )
-// 関数名：void Update_Sound_Fade_Out
-// 戻り値：void
-// 引数 1：int
-//====================================================================================================================================================================================
-void Update_Sound_Fade_Out(int Sound_Index)
-{
-	// 早期リターン
-	if (!Sound_State.Fade_Switch[Sound_Index])
-	{
-		return;
-	}
-
-	if (Sound_State.Setting_Volume.Min >= Sound_State.Volume[Sound_Index])
-	{
-		// 音量の設定
-		Sound_State.Sound_Buffer[Sound_Index]->SetVolume(Sound_State.Volume[Sound_Index]);
-		return;
-	}
-
-	Sound_State.Volume[Sound_Index] -= SOUND_FADE_VALUE;
-
-	if (Sound_State.Setting_Volume.Min < Sound_State.Volume[Sound_Index])
-	{
-		// 音量の設定
-		Sound_State.Sound_Buffer[Sound_Index]->SetVolume(Sound_State.Volume[Sound_Index]);
-		return;
-	}
-
-	//Set_Switch(SWITCH_TYPE_SOUND_FADE, false);
-	Sound_State.Fade_Switch[Sound_Index] = false;
-	Sound_State.Fade_Type[Sound_Index] = SOUND_FADE_TYPE_NONE;
-	Sound_State.Volume[Sound_Index] = Sound_State.Setting_Volume.Min;
-	Stop_Sound(Sound_Index);
-
-	// 音量の設定
-	Sound_State.Sound_Buffer[Sound_Index]->SetVolume(Sound_State.Volume[Sound_Index]);
-
-	return;
-}
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 読み込み
-//====================================================================================================================================================================================
-#pragma region Load
 //====================================================================================================================================================================================
 // サウンドの読み込み
 // 関数名：LPDIRECTSOUNDBUFFER8 Load_Sound
@@ -213,7 +84,12 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 	// 変数宣言：初期化 / サウンド読み込み
 	const char *Sound_File[] =	//	サウンドファイル
 	{
-		SOUND_FILE_AGONY,	//	SOUND_TYPE_AGONY
+		SOUND_FILE_ATTACK_ITEM,		//	SOUND_TYPE_ATTACK_ITEM
+		SOUND_FILE_ATTACK_KICK,		//	SOUND_TYPE_ATTACK_KICK
+		SOUND_FILE_ATTACK_PUNCH,	//	SOUND_TYPE_ATTACK_PUNCH
+		SOUND_FILE_ITEM_PICK,		//	SOUND_TYPE_ITEM_PICK
+		SOUND_FILE_KNOCK_DOWN,		//	SOUND_TYPE_KNOCK_DOWN
+		SOUND_FILE_KNOCK_DOWN_BOSS,	//	SOUND_TYPE_KNOCK_DOWN_BOSS
 	};
 
 	// 変数宣言：初期化
@@ -250,7 +126,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 	if (!MultiMedia_Input_Output_Handle)
 	{
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_SOUND_FILE_INPUT);
 	}
 
 	// ２．ファイルの解析( 1 ) RIFFチャンクの検索
@@ -274,7 +149,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 			0								//	クローズ操作のためのフラグを指定
 		);
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_CHUNKS);
 	}
 
 	// ３．ファイルの解析( 2 ) フォーマットチャンクの検索
@@ -298,7 +172,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 			0								//	クローズ操作のためのフラグを指定
 		);
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_CHUNKS);
 	}
 
 	// 検索情報を元に読み込み処理
@@ -317,7 +190,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 			0								//	クローズ操作のためのフラグを指定
 		);
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_LOAD_SOUND_FILE_HANDLE);
 	}
 
 	mmioAscend	//	mmioAscend関数：mmioDescend関数で進入した、またはmmioCreateChunk関数で作成したRIFFファイルのチャンクから退出する
@@ -325,7 +197,7 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 		MultiMedia_Input_Output_Handle,	//	開いているRIFFファイルのファイルハンドルを指定
 		&Format_Chunk,					//	mmioDescend関数または、mmioCreateChunk関数で値が書き込まれているアプリケーション定義のMMCKINFO構造体のアドレスを指定
 		0								//	予約されているので、"0"を指定
-	); 
+	);
 
 	// ４．ファイルの解析( 3 ) データチャンクの検索
 	// 検索ワードを指定
@@ -347,7 +219,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 			0								//	クローズ操作のためのフラグを指定
 		);
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_CHUNKS);
 	}
 
 	// ５．データの読み込み
@@ -367,7 +238,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 		delete[] Data;
 
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_LOAD_SOUND_FILE_HANDLE);
 	}
 
 	// ６．音源データを読み込む「セカンダリバッファ」を用意
@@ -383,7 +253,7 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 			DSBCAPS_LOCDEFER |
 			DSBCAPS_CTRLFX |
 			DSBCAPS_CTRLVOLUME
-		);
+			);
 	Sound_Buffer_Config.dwBufferBytes = Data_Size;				//	新しいバッファのサイズ( 単位：byte )を指定
 	Sound_Buffer_Config.lpwfxFormat = &Pulse_Code_Modulation;	//	バッファのウェーブフォームフォーマットを指定
 
@@ -396,7 +266,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 	)))
 	{
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_CREATE_SOUND_BUFFER);
 	}
 
 	// サウンドバッファの取り出し
@@ -408,13 +277,10 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 	)))
 	{
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_GET_SOUND_INTERFACE);
 	}
 
 	// サウンドバッファ取り出し後、総合バッファを削除
-	//Start_Critical_Section();
 	SAFE_RELEASE(Sound_Base_Buffer);
-	//End_Critical_Section();
 
 	// ７．用意したセカンダリバッファにデータを転送
 	// 書き込み可能にするため、バッファをロック
@@ -430,7 +296,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 	)))
 	{
 		// エラーメッセージの出力
-		//Message_Window(MESSAGE_WINDOW_TYPE_ERROR_ARGUMENT_LOCK);
 	}
 
 	// データの転送
@@ -456,11 +321,7 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 	// セカンダリバッファを戻り値として返す
 	return Sound_Buffer;
 }
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 再生
-//====================================================================================================================================================================================
-#pragma region Play
+
 //====================================================================================================================================================================================
 // サウンドの再生
 // 関数名：void Play_Sound
@@ -470,7 +331,6 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 //====================================================================================================================================================================================
 void Play_Sound(int Sound_Index, int Play_Method)
 {
-	// Sound_Flag："1" = ( E_DS8_FLAG_LOOP )ならループ再生
 	if (!Sound_State.Pause_Flag[Sound_Index])
 	{
 		Sound_State.Sound_Buffer[Sound_Index]->SetCurrentPosition(0);
@@ -488,36 +348,7 @@ void Play_Sound(int Sound_Index, int Play_Method)
 
 	return;
 }
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 一時停止
-//====================================================================================================================================================================================
-#pragma region Pause
-//====================================================================================================================================================================================
-// サウンドの一時停止
-// 関数名：void Pause_Sound
-// 戻り値：void
-// 引数 1：int
-//====================================================================================================================================================================================
-void Pause_Sound(int Sound_Index)
-{
-	if (Sound_State.Play_Flag[Sound_Index])
-	{
-		Sound_State.Pause_Flag[Sound_Index] = true;
-		Get_Play_Position_Sound(Sound_Index);
-	}
-	else
-	{
-		Sound_State.Pause_Flag[Sound_Index] = false;
-	}
 
-	return;
-}
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 停止
-//====================================================================================================================================================================================
-#pragma region Stop
 //====================================================================================================================================================================================
 // サウンドの停止
 // 関数名：void Stop_Sound
@@ -539,204 +370,6 @@ void Stop_Sound(int Sound_Index)
 
 	return;
 }
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 調査
-//====================================================================================================================================================================================
-#pragma region Check
-//====================================================================================================================================================================================
-// サウンドの再生状態を調査
-// 関数名：bool Check_Play_Flag_Sound
-// 戻り値：bool
-// 引数 1：int
-//====================================================================================================================================================================================
-bool Check_Play_Flag_Sound(int Sound_Index)
-{
-	// 変数宣言：初期化
-	DWORD Status = NULL;	//	ステータス
-
-	Sound_State.Sound_Buffer[Sound_Index]->GetStatus(&Status);	//	GetStatus関数：指定されたCFileオブジェクトインスタンス、または指定されたファイルパスに関連したステータス情報を取得します
-	
-	// サウンド再生中
-	if (Status & DSBSTATUS_PLAYING)
-	{
-		return true;
-	}
-
-	return false;
-}
-
-//====================================================================================================================================================================================
-// サウンドの再生状態を調査( 全て )
-// 関数名：void Check_Play_Flag_All_Sound
-// 戻り値：void
-//====================================================================================================================================================================================
-void Check_Play_Flag_All_Sound(void)
-{
-	// 変数宣言：初期化
-	DWORD Status = NULL;	//	ステータス
-
-	for (int i = 0; i < SOUND_MAX; i++)
-	{
-		Sound_State.Sound_Buffer[i]->GetStatus(&Status);	//	GetStatus関数：指定されたCFileオブジェクトインスタンス、または指定されたファイルパスに関連したステータス情報を取得します
-		
-		if (Status & DSBSTATUS_PLAYING)
-		{
-			Sound_State.Play_Flag[i] = true;
-		}
-		else
-		{
-			Sound_State.Play_Flag[i] = false;
-		}
-
-		Status = NULL;
-	}
-
-	return;
-}
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 設定
-//====================================================================================================================================================================================
-#pragma region Set
-//====================================================================================================================================================================================
-// サウンドの一時停止設定
-// 関数名：void Set_Pause_Sound
-// 戻り値：void
-//====================================================================================================================================================================================
-void Set_Pause_Sound(void)
-{
-	for (int i = 0; i < SOUND_MAX; i++)
-	{
-		//switch (i)
-		//{
-		////case SOUND_TYPE_BACKGROUND_MUSIC_002_GAME_PARTICLE:
-		////case SOUND_TYPE_SOUND_EFFECT_003_GAME_THE_TOPOS:
-		////case SOUND_TYPE_SOUND_EFFECT_004_GAME_VOEZ:
-		////case SOUND_TYPE_SOUND_EFFECT_005_GAME_LUMINA:
-		////case SOUND_TYPE_SOUND_EFFECT_006_GAME_DIVISION:
-		////case SOUND_TYPE_SOUND_EFFECT_008_GAME_MENU:
-		////case SOUND_TYPE_SOUND_EFFECT_009_GAME_MENU_ENTER:
-		////case SOUND_TYPE_SOUND_EFFECT_010_GAME_MENU_BACK:
-		//	Pause_Sound(i);
-		//	Stop_Sound(i);
-		//	continue;
-		//	break;
-		//default:
-		//	continue;
-		//	break;
-		//}
-	}
-
-	return;
-}
-
-//====================================================================================================================================================================================
-// サウンドの再生再開設定
-// 関数名：void Set_Re_Play_Sound
-// 戻り値：void
-//====================================================================================================================================================================================
-void Set_Re_Play_Sound(void)
-{
-	for (int i = 0; i < SOUND_MAX; i++)
-	{
-		// 早期コンティニュー
-		if (!Sound_State.Pause_Flag[i])
-		{
-			continue;
-		}
-
-		//switch (i)
-		//{
-		//case SOUND_TYPE_BACKGROUND_MUSIC_002_GAME_PARTICLE:
-		//case SOUND_TYPE_SOUND_EFFECT_003_GAME_THE_TOPOS:
-		//case SOUND_TYPE_SOUND_EFFECT_004_GAME_VOEZ:
-		//case SOUND_TYPE_SOUND_EFFECT_005_GAME_LUMINA:
-		//case SOUND_TYPE_SOUND_EFFECT_006_GAME_DIVISION:
-		//case SOUND_TYPE_SOUND_EFFECT_008_GAME_MENU:
-		//case SOUND_TYPE_SOUND_EFFECT_009_GAME_MENU_ENTER:
-		//case SOUND_TYPE_SOUND_EFFECT_010_GAME_MENU_BACK:
-		//	Play_Sound(i, Sound_State.Play_Method[i]);
-		//	continue;
-		//	break;
-		//default:
-		//	continue;
-		//	break;
-		//}
-	}
-
-	return;
-}
-
-//====================================================================================================================================================================================
-// サウンドのフェード設定
-// 関数名：void Set_Sound_Fade
-// 戻り値：void
-// 引数 1：int
-// 引数 2：int
-//====================================================================================================================================================================================
-void Set_Sound_Fade(int Sound_Index, int Sound_Fade_Type)
-{
-	if (Sound_Fade_Type == SOUND_FADE_TYPE_NONE)
-	{
-		//Set_Switch(SWITCH_TYPE_SOUND_FADE, false);
-	}
-	else
-	{
-		//Set_Switch(SWITCH_TYPE_SOUND_FADE, true);
-	}
-
-	Sound_State.Fade_Type[Sound_Index] = Sound_Fade_Type;
-	Sound_State.Fade_Switch[Sound_Index] = true;
-
-	return;
-}
-
-//====================================================================================================================================================================================
-// サウンドの音量設定
-// 関数名：void Set_Sound_Volume
-// 戻り値：void
-// 引数 1：int
-// 引数 2：int
-//====================================================================================================================================================================================
-void Set_Sound_Volume(int Sound_Index, int Sound_Volume_Type)
-{
-	Set_Sound_Fade(Sound_Index, SOUND_FADE_TYPE_NONE);
-
-	switch (Sound_Volume_Type)
-	{
-	case SOUND_VOLUME_TYPE_LOWEST:
-		Sound_State.Volume[Sound_Index] = Sound_State.Setting_Volume.Min;
-		break;
-	case SOUND_VOLUME_TYPE_HIGHEST:
-		Sound_State.Volume[Sound_Index] = Sound_State.Setting_Volume.Max;
-		break;
-	default:
-		break;
-	}
-
-	// 音量の設定
-	Sound_State.Sound_Buffer[Sound_Index]->SetVolume(Sound_State.Volume[Sound_Index]);
-
-	return;
-}
-#pragma endregion
-//====================================================================================================================================================================================
-// 領域 - 取得
-//====================================================================================================================================================================================
-#pragma region Get
-//====================================================================================================================================================================================
-// サウンドの再生位置の取得
-// 関数名：void Get_Play_Position_Sound
-// 戻り値：void
-// 引数 1：int
-//====================================================================================================================================================================================
-void Get_Play_Position_Sound(int Sound_Index)
-{
-	Sound_State.Sound_Buffer[Sound_Index]->GetCurrentPosition(&Sound_State.Play_Position[Sound_Index], NULL);
-
-	return;
-}
 
 //====================================================================================================================================================================================
 // サウンドの取得
@@ -747,601 +380,3 @@ SOUND *Get_Sound(void)
 {
 	return &Sound_State;
 }
-#pragma endregion
-////====================================================================================================================================================================================
-//// 領域 - デバッグ
-////====================================================================================================================================================================================
-//#pragma region Debug
-//#ifdef _DEBUG
-////====================================================================================================================================================================================
-//// サウンドのデバッグ描画
-//// 関数名：void Draw_Debug_Sound
-//// 戻り値：void
-//// 引数 1：DEBUG*
-////====================================================================================================================================================================================
-//void Draw_Debug_Sound(DEBUG *Debug)
-//{
-//	// 早期リターン
-//	if ((!Debug->Switch) || (Debug->Type != DEBUG_TYPE_SOUND))
-//	{
-//		return;
-//	}
-//
-//	// デバッグタイプ
-//	Print_Debug("==========| サウンド |========== \n\n");
-//	// 設定音量
-//	Print_Debug("Setting_Volume.Min：%d \n", Sound_State.Setting_Volume.Min);
-//	Print_Debug("Setting_Volume.Max：%d \n\n", Sound_State.Setting_Volume.Max);
-//	// 再生フラグ・サウンド音量
-//	switch (Get_Progress())
-//	{
-//	case PROGRESS_TYPE_OPENING:
-//		Draw_Debug_Sound_Opening();
-//		break;
-//	case PROGRESS_TYPE_TITLE:
-//		Draw_Debug_Sound_Title();
-//		break;
-//	case PROGRESS_TYPE_GAME:
-//		Draw_Debug_Sound_Game();
-//		break;
-//	case PROGRESS_TYPE_ENDING:
-//		Draw_Debug_Sound_Ending();
-//		break;
-//	default:
-//		break;
-//	}
-//	// 終了
-//	Print_Debug("==========| 終了 |==========");
-//
-//	return;
-//}
-//
-////====================================================================================================================================================================================
-//// サウンド( オープニング )のデバッグ描画
-//// 関数名：void Draw_Debug_Sound_Opening
-//// 戻り値：void
-////====================================================================================================================================================================================
-//void Draw_Debug_Sound_Opening(void)
-//{
-//	// 変数宣言：初期化
-//	char Debug_Play_Flag[SOUND_MAX][6];		//	フラグ識別
-//	char Debug_Pause_Flag[SOUND_MAX][6];	//	フラグ識別
-//	char Debug_Fade_Switch[SOUND_MAX][6];	//	フラグ識別
-//
-//	for (int i = 0; i < SOUND_MAX; i++)
-//	{
-//		// 早期コンティニュー
-//		if (!Sound_State.Play_Flag[i])
-//		{
-//			continue;
-//		}
-//
-//		// 再生フラグ
-//		if (Sound_State.Play_Flag[i])
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "false");
-//		}
-//		// 一時停止フラグ
-//		if (Sound_State.Pause_Flag[i])
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "false");
-//		}
-//		// フェードスイッチ
-//		if (Sound_State.Fade_Switch[i])
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "false");
-//		}
-//
-//		switch (i)
-//		{
-//		case SOUND_TYPE_SOUND_EFFECT_000_OPENING_NOISE:
-//			Print_Debug("[ SE_000 - NOISE ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_001_OPENING_RECORD_NOISE:
-//			Print_Debug("[ SE_001 - RECORD_NOISE ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		default:
-//			continue;
-//			break;
-//		}
-//	}
-//
-//	return;
-//}
-//
-////====================================================================================================================================================================================
-//// サウンド( タイトル )のデバッグ描画
-//// 関数名：void Draw_Debug_Sound_Title
-//// 戻り値：void
-////====================================================================================================================================================================================
-//void Draw_Debug_Sound_Title(void)
-//{
-//	// 変数宣言：初期化
-//	char Debug_Play_Flag[SOUND_MAX][6];		//	フラグ識別
-//	char Debug_Pause_Flag[SOUND_MAX][6];	//	フラグ識別
-//	char Debug_Fade_Switch[SOUND_MAX][6];	//	フラグ識別
-//
-//	for (int i = 0; i < SOUND_MAX; i++)
-//	{
-//		// 早期コンティニュー
-//		if (!Sound_State.Play_Flag[i])
-//		{
-//			continue;
-//		}
-//
-//		// 再生フラグ
-//		if (Sound_State.Play_Flag[i])
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "false");
-//		}
-//		// 一時停止フラグ
-//		if (Sound_State.Pause_Flag[i])
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "false");
-//		}
-//		// フェードスイッチ
-//		if (Sound_State.Fade_Switch[i])
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "false");
-//		}
-//
-//		switch (i)
-//		{
-//		case SOUND_TYPE_BACKGROUND_MUSIC_000_TITLE_AMBIENT:
-//			Print_Debug("[ BGM_000 - AMBIENT ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_000_TITLE_DECISION:
-//			Print_Debug("[ SE_000 - DECISION ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_001_TITLE_SELECT:
-//			Print_Debug("[ SE_001 - SELECT ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_002_TITLE_NEXT:
-//			Print_Debug("[ SE_002 - NEXT ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		default:
-//			continue;
-//			break;
-//		}
-//	}
-//
-//	return;
-//}
-//
-////====================================================================================================================================================================================
-//// サウンド( ゲーム )のデバッグ描画
-//// 関数名：void Draw_Debug_Sound_Game
-//// 戻り値：void
-////====================================================================================================================================================================================
-//void Draw_Debug_Sound_Game(void)
-//{
-//	// 変数宣言：初期化
-//	char Debug_Play_Flag[SOUND_MAX][6];		//	フラグ識別
-//	char Debug_Pause_Flag[SOUND_MAX][6];	//	フラグ識別
-//	char Debug_Fade_Switch[SOUND_MAX][6];	//	フラグ識別
-//
-//	for (int i = 0; i < SOUND_MAX; i++)
-//	{
-//		// 早期コンティニュー
-//		if (!Sound_State.Play_Flag[i])
-//		{
-//			continue;
-//		}
-//
-//		// 再生フラグ
-//		if (Sound_State.Play_Flag[i])
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "false");
-//		}
-//		// 一時停止フラグ
-//		if (Sound_State.Pause_Flag[i])
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "false");
-//		}
-//		// フェードスイッチ
-//		if (Sound_State.Fade_Switch[i])
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "false");
-//		}
-//
-//		switch (i)
-//		{
-//		case SOUND_TYPE_BACKGROUND_MUSIC_000_GAME_FOREST:
-//			Print_Debug("[ BGM_000 - FOREST ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_BACKGROUND_MUSIC_001_GAME_AMBIENT:
-//			Print_Debug("[ BGM_001 - AMBIENT ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_BACKGROUND_MUSIC_002_GAME_PARTICLE:
-//			Print_Debug("[ BGM_002 - PARTICLE ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_000_GAME_BELL:
-//			Print_Debug("[ SE_000 - BELL ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_001_GAME_WALK:
-//			Print_Debug("[ SE_001 - WALK ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_002_GAME_RUN:
-//			Print_Debug("[ SE_002 - RUN ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_003_GAME_THE_TOPOS:
-//			Print_Debug("[ SE_003 - THE_TOPOS ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_004_GAME_VOEZ:
-//			Print_Debug("[ SE_004 - VOEZ ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_005_GAME_LUMINA:
-//			Print_Debug("[ SE_005 - LUMINA ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_006_GAME_DIVISION:
-//			Print_Debug("[ SE_006 - DEVISION ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_007_GAME_PAUSE:
-//			Print_Debug("[ SE_007 - PAUSE ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_008_GAME_MENU:
-//			Print_Debug("[ SE_008 - MENU ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_009_GAME_MENU_ENTER:
-//			Print_Debug("[ SE_009 - MENU_ENTER ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_010_GAME_MENU_BACK:
-//			Print_Debug("[ SE_010 - MENU_BACK ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_011_GAME_TUTORIAL_SUCCESS:
-//			Print_Debug("[ SE_011 - TUTORIAL_SUCCESS ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_012_GAME_TUTORIAL_CHECK:
-//			Print_Debug("[ SE_012 - TUTORIAL_CHECK ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_013_GAME_TUTORIAL_PAPER:
-//			Print_Debug("[ SE_013 - TUTORIAL_PAPER ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		default:
-//			continue;
-//			break;
-//		}
-//	}
-//
-//	return;
-//}
-//
-////====================================================================================================================================================================================
-//// サウンド( エンディング )のデバッグ描画
-//// 関数名：void Draw_Debug_Sound_Ending
-//// 戻り値：void
-////====================================================================================================================================================================================
-//void Draw_Debug_Sound_Ending(void)
-//{
-//	// 変数宣言：初期化
-//	char Debug_Play_Flag[SOUND_MAX][6];		//	フラグ識別
-//	char Debug_Pause_Flag[SOUND_MAX][6];	//	フラグ識別
-//	char Debug_Fade_Switch[SOUND_MAX][6];	//	フラグ識別
-//
-//	for (int i = 0; i < SOUND_MAX; i++)
-//	{
-//		// 早期コンティニュー
-//		if (!Sound_State.Play_Flag[i])
-//		{
-//			continue;
-//		}
-//
-//		// 再生フラグ
-//		if (Sound_State.Play_Flag[i])
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Play_Flag[i], "%s", "false");
-//		}
-//		// 一時停止フラグ
-//		if (Sound_State.Pause_Flag[i])
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Pause_Flag[i], "%s", "false");
-//		}
-//		// フェードスイッチ
-//		if (Sound_State.Fade_Switch[i])
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "true");
-//		}
-//		else
-//		{
-//			sprintf(Debug_Fade_Switch[i], "%s", "false");
-//		}
-//
-//		switch (i)
-//		{
-//		case SOUND_TYPE_SOUND_EFFECT_000_ENDING_SPLASH:
-//			Print_Debug("[ SE_000 - SPLASH ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_001_ENDING_DEEP:
-//			Print_Debug("[ SE_001 - DEEP ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		case SOUND_TYPE_SOUND_EFFECT_002_ENDING_SIGNAL:
-//			Print_Debug("[ SE_002 - SIGNAL ] \n");
-//			Print_Debug("Play_Method：%d \n", Sound_State.Play_Method[i]);
-//			Print_Debug("Play_Position：%d \n", Sound_State.Play_Position[i]);
-//			Print_Debug("Fade_Type：%d \n", Sound_State.Fade_Type[i]);
-//			Print_Debug("Volume：%d \n", Sound_State.Volume[i]);
-//			Print_Debug("Play_Flag：%s \n", Debug_Play_Flag[i]);
-//			Print_Debug("Pause_Flag：%s \n", Debug_Pause_Flag[i]);
-//			Print_Debug("Fade_Switch：%s \n", Debug_Fade_Switch[i]);
-//			Print_Debug("\n");
-//			continue;
-//			break;
-//		default:
-//			continue;
-//			break;
-//		}
-//	}
-//
-//	return;
-//}
-//#endif
-//#pragma endregion

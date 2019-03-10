@@ -6,6 +6,7 @@
 //=============================================================================
 #include "Struct.h"
 #include "Onna.h"
+#include "Sound.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -111,6 +112,7 @@ void UpdateOnna(void)
 			// HP0Ç…Ç»Ç¡ÇΩÇÁè¡ñ≈
 			if (onnaWk[en].HPzan == 0)
 			{
+				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
 				onnaWk[en].use = false;
 			}
 		}

@@ -359,7 +359,6 @@ void ControlPlayer(int pn)
 		// ジャブ PS4□
 		if (GetKeyboardTrigger(DIK_J) || IsButtonTriggered(pn, BUTTON_A))
 		{
-			Play_Sound(SOUND_TYPE_AGONY, SOUND_PLAY_TYPE_PLAY);
 			playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Jab, Data[Jab].Spd);
 		}
 		// キック PS4×
@@ -733,38 +732,45 @@ void HitAction(int pn, ENEMY *enemy)
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Jab].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		break;
 	case Straight:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Straight].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		break;
 	case Upper:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Upper].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		break;
 	case Kick:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Kick].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_KICK, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		break;
 	case Pickup:
+		Play_Sound(SOUND_TYPE_ITEM_PICK, SOUND_PLAY_TYPE_PLAY);
 		break;
 	case Attackitem:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Attackitem].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_ITEM, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		break;
 	case Throwitem:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Throwitem].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_ITEM, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		break;
 	default:
