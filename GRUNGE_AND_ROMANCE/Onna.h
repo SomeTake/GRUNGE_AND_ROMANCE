@@ -14,10 +14,12 @@
 // マクロ定義
 //*****************************************************************************
 #define	ONNA_XFILE		"data/MODEL/onna.x"		// 読み込むモデル名
-#define ONNA_NUM		(1)					// エネミーの数
+#define ONNA_NUM		(1)						// エネミーの数
 #define ONNA_HP_MAX		(50)
 #define ONNA_DIRECTION	(200.0f)
+#define ONNA_DIRECTION2	(360.0f)				// エネミーを反対向きに
 #define ONNA_SCALE		(3.0f)
+#define ONNA_XSCALE		(10.0f)
 
 //*****************************************************************************
 // グローバル変数
@@ -31,5 +33,6 @@ void UninitOnna(void);
 void UpdateOnna(void);
 void DrawOnna(void);
 ENEMY *GetOnna(int en);
+void SetVertexOnna(void);
 
 #endif
