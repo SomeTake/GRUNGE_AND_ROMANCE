@@ -7,6 +7,8 @@
 #include "Struct.h"
 #include "Blackhole.h"
 #include "Sound.h"
+#include "Effect.h"
+#include "Game.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -103,6 +105,9 @@ void UninitBlackhole(void)
 //=============================================================================
 void UpdateBlackhole(void)
 {
+	int Check = 0;
+	static bool Flag = false;
+
 	for (int en = 0; en < BLACKHOLE_NUM; en++)
 	{
 		// 使用している場合のみ更新
@@ -116,6 +121,19 @@ void UpdateBlackhole(void)
 				blackholeWk[en].use = false;
 			}
 		}
+		else if ((!Flag) && (!blackholeWk[en].use))
+		{
+			Check++;
+			Flag = true;
+		}
+	}
+
+	if (Check >= BLACKHOLE_NUM)
+	{
+		UninitGame();
+		Set_Game_Index(GAME_TYPE_STAGE_NEXT);
+		InitGame();
+		Update_Effect_Stage_Switch();
 	}
 }
 

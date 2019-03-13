@@ -20,10 +20,9 @@
 #define SOUND_FILE_ITEM_PICK ("data/SOUND/SE/Item_Pick.wav")				//	サウンドファイル
 #define SOUND_FILE_KNOCK_DOWN ("data/SOUND/SE/Knock_Down.wav")				//	サウンドファイル
 #define SOUND_FILE_KNOCK_DOWN_BOSS ("data/SOUND/SE/Knock_Down_Boss.wav")	//	サウンドファイル
-#define SOUND_FADE_VALUE (25)												//	サウンドのフェード値
+#define SOUND_FILE_BGM ("data/SOUND/BGM/ClubAvenue.wav")					//	サウンドファイル
+#define SOUND_FILE_ENDING ("data/SOUND/BGM/Title_Back_Ground_Music_000_Ambient.wav")	//	サウンドファイル
 #define SOUND_MAX (SOUND_TYPE_MAX)											//	サウンドの最大数
-#define SOUND_VOLUME_MIN (-10000)											//	サウンドの音量最小値
-#define SOUND_VOLUME_MAX (0)												//	サウンドの音量最大値
 //====================================================================================================================================================================================
 // 列挙型定義
 //====================================================================================================================================================================================
@@ -35,6 +34,8 @@ enum SOUND_TYPE
 	SOUND_TYPE_ITEM_PICK,		//	アイテム取得
 	SOUND_TYPE_KNOCK_DOWN,		//	ノックダウン
 	SOUND_TYPE_KNOCK_DOWN_BOSS,	//	ノックダウン：ボス
+	SOUND_TYPE_BGM,				//	BGM
+	SOUND_TYPE_ENDING,			//	ENDING
 	SOUND_TYPE_MAX,				//	定数の最大値
 };
 enum SOUND_PLAY_TYPE
@@ -42,19 +43,6 @@ enum SOUND_PLAY_TYPE
 	SOUND_PLAY_TYPE_PLAY,	//	再生
 	SOUND_PLAY_TYPE_LOOP,	//	ループ再生
 	SOUND_PLAY_TYPE_MAX,	//	定数の最大値
-};
-enum SOUND_FADE_TYPE
-{
-	SOUND_FADE_TYPE_NONE,		//	フェード無効
-	SOUND_FADE_TYPE_FADE_IN,	//	フェードイン
-	SOUND_FADE_TYPE_FADE_OUT,	//	フェードアウト
-	SOUND_FADE_TYPE_MAX,		//	定数の最大値
-};
-enum SOUND_VOLUME_TYPE
-{
-	SOUND_VOLUME_TYPE_LOWEST,	//	最小
-	SOUND_VOLUME_TYPE_HIGHEST,	//	最大
-	SOUND_VOLUME_TYPE_MAX,		//	定数の最大値
 };
 //====================================================================================================================================================================================
 // 構造体定義
@@ -68,22 +56,6 @@ typedef struct
 {
 	IDirectSound8 *Direct_Sound = NULL;				//	サウンドのオブジェクト
 	LPDIRECTSOUNDBUFFER8 Sound_Buffer[SOUND_MAX];	//	サウンド
-	SETTING_VOLUME Setting_Volume;					//	設定音量
-	DWORD Play_Position[SOUND_MAX];					//	再生位置
-	DWORD Play_Method[SOUND_MAX];					//	再生方法
-	int Fade_Type[SOUND_MAX];						//	フェードタイプ
-	bool Fade_Switch[SOUND_MAX];					//	フェードスイッチ
-	bool Play_Flag[SOUND_MAX];						//	再生フラグ
-	bool Pause_Flag[SOUND_MAX];						//	一時停止フラグ
-	int Volume[SOUND_MAX] =							//	音量
-	{
-		DSBVOLUME_MAX,	//	SOUND_TYPE_ATTACK_ITEM
-		DSBVOLUME_MAX,	//	SOUND_TYPE_ATTACK_KICK
-		DSBVOLUME_MAX,	//	SOUND_TYPE_ATTACK_PUNCH
-		DSBVOLUME_MAX,	//	SOUND_TYPE_ITEM_PICK
-		DSBVOLUME_MAX,	//	SOUND_TYPE_KNOCK_DOWN
-		DSBVOLUME_MAX,	//	SOUND_TYPE_KNOCK_DOWN_BOSS
-	};
 }SOUND;
 //====================================================================================================================================================================================
 // プロトタイプ宣言

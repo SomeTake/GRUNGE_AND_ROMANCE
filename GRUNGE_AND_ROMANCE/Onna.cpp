@@ -7,6 +7,8 @@
 #include "Struct.h"
 #include "Onna.h"
 #include "Sound.h"
+#include "Game.h"
+#include "Effect.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -103,12 +105,14 @@ void UninitOnna(void)
 //=============================================================================
 void UpdateOnna(void)
 {
+	int Check = 0;
+	static bool Flag = false;
+
 	for (int en = 0; en < ONNA_NUM; en++)
 	{
 		// 使用している場合のみ更新
 		if (onnaWk[en].use)
 		{
-
 			// HP0になったら消滅
 			if (onnaWk[en].HPzan == 0)
 			{
@@ -116,6 +120,19 @@ void UpdateOnna(void)
 				onnaWk[en].use = false;
 			}
 		}
+		else if ((!Flag) && (!onnaWk[en].use))
+		{
+			Check++;
+			Flag = true;
+		}
+	}
+
+	if (Check >= ONNA_NUM)
+	{
+		UninitGame();
+		Set_Game_Index(GAME_TYPE_STAGE_BLACK_HOLE);
+		InitGame();
+		Update_Effect_Stage_Switch();
 	}
 }
 

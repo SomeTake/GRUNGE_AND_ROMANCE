@@ -26,7 +26,6 @@ HRESULT Initialize_Sound(HWND Window_Handle)
 	// ‰Šú‰» / ƒ[ƒƒNƒŠƒA
 	for (int i = 0; i < SOUND_MAX; i++)
 	{
-		Sound_State.Play_Flag[i] = NULL;
 		ZeroMemory(&Sound_State.Sound_Buffer[i], sizeof(LPDIRECTSOUNDBUFFER8));
 	}
 
@@ -90,6 +89,8 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 		SOUND_FILE_ITEM_PICK,		//	SOUND_TYPE_ITEM_PICK
 		SOUND_FILE_KNOCK_DOWN,		//	SOUND_TYPE_KNOCK_DOWN
 		SOUND_FILE_KNOCK_DOWN_BOSS,	//	SOUND_TYPE_KNOCK_DOWN_BOSS
+		SOUND_FILE_BGM,				//	SOUND_TYPE_BGM
+		SOUND_FILE_ENDING,			//	SOUND_TYPE_ENDING
 	};
 
 	// •Ï”éŒ¾F‰Šú‰»
@@ -331,20 +332,8 @@ LPDIRECTSOUNDBUFFER8 Load_Sound(int Sound_Index)
 //====================================================================================================================================================================================
 void Play_Sound(int Sound_Index, int Play_Method)
 {
-	if (!Sound_State.Pause_Flag[Sound_Index])
-	{
-		Sound_State.Sound_Buffer[Sound_Index]->SetCurrentPosition(0);
-		Sound_State.Sound_Buffer[Sound_Index]->Play(0, 0, Play_Method);
-	}
-	else
-	{
-		Sound_State.Sound_Buffer[Sound_Index]->SetCurrentPosition(Sound_State.Play_Position[Sound_Index]);
-		Sound_State.Sound_Buffer[Sound_Index]->Play(0, 0, Play_Method);
-	}
-
-	Sound_State.Play_Method[Sound_Index] = Play_Method;
-	Sound_State.Play_Flag[Sound_Index] = true;
-	Sound_State.Pause_Flag[Sound_Index] = false;
+	Sound_State.Sound_Buffer[Sound_Index]->SetCurrentPosition(0);
+	Sound_State.Sound_Buffer[Sound_Index]->Play(0, 0, Play_Method);
 
 	return;
 }
