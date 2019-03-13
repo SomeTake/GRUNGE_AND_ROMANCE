@@ -13,6 +13,8 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
+#define	ENEMY_WALK		(0.5f)								// エネミーの歩く速度
+#define	ENEMY_RUN		(2.0f)								// エネミーの走る速度
 
 //*****************************************************************************
 // 構造体宣言
@@ -28,5 +30,11 @@ void DrawGame(void);
 
 void AddDamageEnemy(ENEMY *enemy, int damage);		// エネミーにダメージを与える
 void AddDamagePlayer(CHARA *player, int damage);	// プレイヤーにダメージを与える
+
+// エネミーの攻撃													
+void EnemyAttack(D3DXVECTOR3 PlayerPos, ENEMY *Enemy, float scl);		// 攻撃する方向の判定＆攻撃のとりまとめ
+void EnemyLeftAttack(D3DXVECTOR3 PlayerPos, ENEMY *Enemy, float scl);	// 左向きの攻撃
+void EnemyRightAttack(D3DXVECTOR3 Playerpos, ENEMY *Enemy, float scl);	// 右向きの攻撃
+
 
 #endif

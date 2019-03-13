@@ -10,38 +10,38 @@
 // マクロ定義
 #define	NUM_GAUGE			(2)									// ポリゴン数
 #define TEXTURE_GAUGE		("data/TEXTURE/PLAYERHP.png")		// サンプル用画像
-#define GAUGE_SIZE_X			(200)								// テクスチャサイズ
-#define GAUGE_SIZE_Y			(30)								// 同上
+#define GAUGE_SIZE_X		(200)								// テクスチャサイズ
+#define GAUGE_SIZE_Y		(30)								// 同上
 #define GAUGE_MAX			(1)									// gaugeの数
 
 #define	NUM_GAUGE2			(2)									// ポリゴン数
-#define TEXTURE_GAUGE2		("data/TEXTURE/aka.png")			// サンプル用画像
-#define GAUGE2_SIZE_X		(200)								// テクスチャサイズ
-#define GAUGE2_SIZE_Y		(40)								// 同上
+#define TEXTURE_GAUGE2		("data/TEXTURE/Hit_Point_000.png")	// サンプル用画像
+#define GAUGE2_SIZE_X		(80)								// テクスチャサイズ
+#define GAUGE2_SIZE_Y		(400)								// 同上
 #define GAUGE2_MAX			(1)									// gauge2の数
 
 #define	NUM_GAUGE3			(2)									// ポリゴン数
-#define TEXTURE_GAUGE3		("data/TEXTURE/ENEMY HP.png")		// サンプル用画像
+#define TEXTURE_GAUGE3		("data/TEXTURE/PLAYERHP.png")		// サンプル用画像
 #define GAUGE3_SIZE_X		(200)								// テクスチャサイズ
 #define GAUGE3_SIZE_Y		(30)								// 同上
 #define GAUGE3_MAX			(1)									// gauge3の数
 
 #define	NUM_GAUGE4			(2)									// ポリゴン数
-#define TEXTURE_GAUGE4		("data/TEXTURE/blue.png")			// サンプル用画像
-#define GAUGE4_SIZE_X		(200)								// テクスチャサイズ
-#define GAUGE4_SIZE_Y		(40)								// 同上
+#define TEXTURE_GAUGE4		("data/TEXTURE/Hit_Point_002.png")	// サンプル用画像
+#define GAUGE4_SIZE_X		(80)								// テクスチャサイズ
+#define GAUGE4_SIZE_Y		(400)								// 同上
 #define GAUGE4_MAX			(1)									// gauge4の数
 
 #define	NUM_GAUGE5			(2)									// ポリゴン数
-#define TEXTURE_GAUGE5		("data/TEXTURE/aka2.png")			// サンプル用画像
-#define GAUGE5_SIZE_X		(200)								// テクスチャサイズ
-#define GAUGE5_SIZE_Y		(40)								// 同上
+#define TEXTURE_GAUGE5		("data/TEXTURE/Hit_Point_001.png")	// サンプル用画像
+#define GAUGE5_SIZE_X		(80)								// テクスチャサイズ
+#define GAUGE5_SIZE_Y		(400)								// 同上
 #define GAUGE5_MAX			(1)									// gauge5の数
 
 #define	NUM_GAUGE6			(2)									// ポリゴン数
-#define TEXTURE_GAUGE6		("data/TEXTURE/blue2.png")			// サンプル用画像
-#define GAUGE6_SIZE_X		(200)								// テクスチャサイズ
-#define GAUGE6_SIZE_Y		(40)								// 同上
+#define TEXTURE_GAUGE6		("data/TEXTURE/Hit_Point_003.png")	// サンプル用画像
+#define GAUGE6_SIZE_X		(80)								// テクスチャサイズ
+#define GAUGE6_SIZE_Y		(400)								// 同上
 #define GAUGE6_MAX			(1)									// gauge6の数
 
 //*****************************************************************************

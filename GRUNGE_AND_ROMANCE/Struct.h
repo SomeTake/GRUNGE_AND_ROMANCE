@@ -12,6 +12,7 @@
 
 
 #define	HIT_CHECK_NUM	(13)								// 当たり判定の数
+<<<<<<< HEAD
 #define ITEM_GETVALUE	(10.0f)								// アイテムを拾える範囲
 
 // アイテムの種類
@@ -21,6 +22,8 @@ enum ItemCategory {
 	ItemYakiYaki,
 };
 
+=======
+>>>>>>> Develop
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
@@ -61,12 +64,16 @@ typedef struct {
 	LPD3DXBUFFER		D3DXBuffMat;		// マテリアル情報へのポインタ
 	DWORD				NumMat;				// マテリアル情報の数
 	D3DXVECTOR3			pos;				// モデルの位置
+	D3DXVECTOR3			Epos;				// モデルの次位置
 	D3DXVECTOR3			move;				// モデルの移動量
 	D3DXVECTOR3			rot;				// 現在の向き
 	D3DXVECTOR3			scl;				// モデルの大きさ(スケール)
 	int					HP;					// 体力
 	int					HPzan;				// 残り体力
 	bool				use;				// 使用中フラグ
+	bool				IdleFlag;			// 敵移動フラグ
+	bool				AttackFlag;			// 敵X値フラグ
+	bool				Direction;			// 向き判定
 }ENEMY;
 
 // アイテム用

@@ -6,6 +6,8 @@
 //=============================================================================
 #include "Struct.h"
 #include "Blackhole.h"
+#include "Player.h"
+#include "Game.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -32,7 +34,8 @@ HRESULT InitBlackhole(int type)
 		// 位置・回転・スケールの初期設定
 		blackholeWk[en].HP = BLACKHOLE_HP_MAX;
 		blackholeWk[en].HPzan = blackholeWk[en].HP;
-		blackholeWk[en].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		blackholeWk[en].pos = D3DXVECTOR3(130.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
+		blackholeWk[en].Epos = D3DXVECTOR3(0.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
 		blackholeWk[en].rot = D3DXVECTOR3(0.0f, BLACKHOLE_DIRECTION, 0.0f);
 		blackholeWk[en].scl = D3DXVECTOR3(BLACKHOLE_SCALE, BLACKHOLE_SCALE, BLACKHOLE_SCALE);
 
@@ -41,6 +44,8 @@ HRESULT InitBlackhole(int type)
 		blackholeWk[en].D3DXBuffMat = NULL;
 		blackholeWk[en].NumMat = 0;
 		blackholeWk[en].use = true;
+		blackholeWk[en].IdleFlag = true;
+		blackholeWk[en].IdleFlag = false;
 
 		if (type == 0)
 		{
@@ -102,11 +107,17 @@ void UninitBlackhole(void)
 //=============================================================================
 void UpdateBlackhole(void)
 {
-	for (int en = 0; en < BLACKHOLE_NUM; en++)
+	CHARA *charaWk = GetPlayer(0);
+
+	for (int en = 0; en < BLACKHOLE_NUM; en++, charaWk++)
 	{
 		// 使用している場合のみ更新
 		if (blackholeWk[en].use)
 		{
+			// エネミーの攻撃
+			EnemyAttack(charaWk->pos, &blackholeWk[en], BLACKHOLE_XSCALE);
+
+			SetVertexBlackhole();
 
 			// HP0になったら消滅
 			if (blackholeWk[en].HPzan == 0)
@@ -172,6 +183,22 @@ void DrawBlackhole(void)
 			pDevice->SetMaterial(&matDef);
 		}
 	}
+}
+
+//=============================================================================
+// 頂点座標の設定
+//=============================================================================
+void SetVertexBlackhole(void)
+{
+	if (blackholeWk->Direction == false)
+	{
+		blackholeWk->rot.y = BLACKHOLE_DIRECTION;
+	}
+	else if (blackholeWk->Direction == true)
+	{
+		blackholeWk->rot.y = BLACKHOLE_DIRECTION2;
+	}
+
 }
 
 //=============================================================================
