@@ -92,9 +92,9 @@ void DrawGame(void)
 {
 	DrawMeshWall();
 	DrawMeshField();
+	DrawGauge();
 	DrawPlayer();
 	DrawOnna();
-	DrawGauge();
 	DrawBlackhole();
 	DrawBabel();
 	DrawKumatyang();

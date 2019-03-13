@@ -27,6 +27,8 @@ GAUGE4						gaugeWk4[GAUGE4_MAX];			// gauge4構造体
 GAUGE5						gaugeWk5[GAUGE5_MAX];			// gauge5構造体
 GAUGE6						gaugeWk6[GAUGE6_MAX];			// gauge6構造体
 
+int						g_nAlpha;							// アルファテストの閾値
+
 //=============================================================================
 // 初期化処理
 //=============================================================================
@@ -231,6 +233,10 @@ void DrawGauge(void)
 	GAUGE4 *gauge4 = gaugeWk4;						// gauge4のポインターを初期化
 	GAUGE5 *gauge5 = gaugeWk5;						// gauge5のポインターを初期化
 	GAUGE6 *gauge6 = gaugeWk6;						// gauge6のポインターを初期化
+
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, g_nAlpha);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 		// 頂点フォーマットの設定
 		pDevice->SetFVF(FVF_VERTEX_2D);
