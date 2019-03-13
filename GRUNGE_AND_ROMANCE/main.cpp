@@ -35,7 +35,7 @@ void Draw(void);
 #ifdef _DEBUG
 void DrawFPS(void);
 #endif
-int	g_nStage = STAGE_GAME;						// ステージ番号
+int	g_nStage = STAGE_OPENING;						// ステージ番号
 bool SetWindowCenter(HWND hWnd);
 
 //*****************************************************************************

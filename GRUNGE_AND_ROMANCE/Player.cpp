@@ -357,7 +357,12 @@ void UpdatePlayer(void)
 				break;
 			}
 		}
+	}
 
+	// 両方死亡でゲームオーバー
+	if (playerWk[0].HPzan <= 0 && playerWk[1].HPzan <= 0)
+	{
+		SetStage(STAGE_TITLE);
 	}
 }
 
@@ -372,41 +377,43 @@ void DrawPlayer(void)
 
 	for (int pn = 0; pn < PLAYER_NUM; pn++)
 	{
-		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&WorldMtxPlayer);
+		if (playerWk[pn].HPzan > 0)
+		{
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&WorldMtxPlayer);
 
-		// スケールを反映
-		D3DXMatrixScaling(&ScaleMatrix, playerWk[pn].scl.x, playerWk[pn].scl.y, playerWk[pn].scl.z);
-		D3DXMatrixMultiply(&WorldMtxPlayer, &WorldMtxPlayer, &ScaleMatrix);
+			// スケールを反映
+			D3DXMatrixScaling(&ScaleMatrix, playerWk[pn].scl.x, playerWk[pn].scl.y, playerWk[pn].scl.z);
+			D3DXMatrixMultiply(&WorldMtxPlayer, &WorldMtxPlayer, &ScaleMatrix);
 
-		// 回転を反映
-		D3DXMatrixRotationYawPitchRoll(&ScaleMatrix, playerWk[pn].rot.y, playerWk[pn].rot.x, playerWk[pn].rot.z);
-		D3DXMatrixMultiply(&WorldMtxPlayer, &WorldMtxPlayer, &ScaleMatrix);
+			// 回転を反映
+			D3DXMatrixRotationYawPitchRoll(&ScaleMatrix, playerWk[pn].rot.y, playerWk[pn].rot.x, playerWk[pn].rot.z);
+			D3DXMatrixMultiply(&WorldMtxPlayer, &WorldMtxPlayer, &ScaleMatrix);
 
-		// 移動を反映
-		D3DXMatrixTranslation(&TransMatrix, playerWk[pn].pos.x, playerWk[pn].pos.y, playerWk[pn].pos.z);
-		D3DXMatrixMultiply(&WorldMtxPlayer, &WorldMtxPlayer, &TransMatrix);
+			// 移動を反映
+			D3DXMatrixTranslation(&TransMatrix, playerWk[pn].pos.x, playerWk[pn].pos.y, playerWk[pn].pos.z);
+			D3DXMatrixMultiply(&WorldMtxPlayer, &WorldMtxPlayer, &TransMatrix);
 
-		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &WorldMtxPlayer);
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &WorldMtxPlayer);
 
-		// 現在のマテリアルを取得
-		pDevice->GetMaterial(&matDef);
+			// 現在のマテリアルを取得
+			pDevice->GetMaterial(&matDef);
 
-		// レンダリング
-		playerWk[pn].Animation->DrawAnimation(playerWk[pn].Animation, &WorldMtxPlayer);
+			// レンダリング
+			playerWk[pn].Animation->DrawAnimation(playerWk[pn].Animation, &WorldMtxPlayer);
 
-		// マテリアルをデフォルトに戻す
-		pDevice->SetMaterial(&matDef);
+			// マテリアルをデフォルトに戻す
+			pDevice->SetMaterial(&matDef);
 
 #ifdef _DEBUG
-		for (int i = 0; i < HIT_CHECK_NUM; i++)
-		{
-			// プレイヤーの当たり判定用ボールを描画する
-			DrawCollision(&playerWk[pn].Collision[i]);
-		}
+			for (int i = 0; i < HIT_CHECK_NUM; i++)
+			{
+				// プレイヤーの当たり判定用ボールを描画する
+				DrawCollision(&playerWk[pn].Collision[i]);
+			}
 #endif
-
+		}
 	}
 }
 
