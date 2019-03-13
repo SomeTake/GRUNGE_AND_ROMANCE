@@ -15,6 +15,10 @@
 #include "Blackhole.h"
 #include "Debugproc.h"
 #include "Game.h"
+#include "Effect.h"
+#include "Babel.h"
+#include "Kumatyang.h"
+#include "YakiYaki.h"
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -39,7 +43,7 @@ HRESULT InitPlayer(int type)
 		// 位置・回転・スケールの初期設定
 		playerWk[pn].pos = FIRST_PLAYER_POS;
 		playerWk[pn].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		playerWk[pn].scl = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+		playerWk[pn].scl = D3DXVECTOR3(0.4f, 0.4f, 0.4f);
 		playerWk[pn].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 		// ステータス等の初期設定
@@ -195,8 +199,14 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
+	// エネミー構造体のポインタを取得
 	ENEMY *OnnaWk = GetOnna(0);
 	ENEMY *BlackholeWk = GetBlackhole(0);
+
+	// アイテム構造体のポインタを取得
+	ITEM *BabelWk = GetBabel(0);
+	ITEM *KumaWk = GetKumatyang(0);
+	ITEM *YakiWk = GetYakiYaki(0);
 
 #ifdef _DEBUG
 	PrintDebugProc("ヒットフラグ %s", playerWk[0].HitFrag ? "true" : "false");
@@ -260,6 +270,73 @@ void UpdatePlayer(void)
 						HitAction(pn, &BlackholeWk[num]);
 					}
 				}
+			}
+
+			// アイテムとの当たり判定
+			// バーベル
+			for (int num = 0; num < BABEL_NUM; num++)
+			{
+				if (BabelWk[num].pickup == false)
+				{
+					if (HitCheckPToI(&playerWk[pn], &BabelWk[num]))
+					{
+						// 当たったとき
+						playerWk[pn].UseItem = true;
+						playerWk[pn].ItemIdx = SetBabel(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
+						playerWk[pn].ItemCategory = ItemBabel;
+					}
+				}
+			}
+
+			// クマちゃん
+			for (int num = 0; num < KUMATYANG_NUM; num++)
+			{
+				if (KumaWk[num].pickup == false)
+				{
+					if (HitCheckPToI(&playerWk[pn], &KumaWk[num]))
+					{
+						// 当たったとき
+						playerWk[pn].UseItem = true;
+						playerWk[pn].ItemIdx = SetKumatyang(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
+						playerWk[pn].ItemCategory = ItemKumatyang;
+					}
+				}
+			}
+
+			// ヤキヤキくん
+			for (int num = 0; num < YAKIYAKI_NUM; num++)
+			{
+				if (YakiWk[num].pickup == false)
+				{
+					if (HitCheckPToI(&playerWk[pn], &YakiWk[num]))
+					{
+						// 当たったとき
+						playerWk[pn].UseItem = true;
+						playerWk[pn].ItemIdx = SetYakiYaki(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
+						playerWk[pn].ItemCategory = ItemYakiYaki;
+					}
+				}
+			}
+
+		}
+
+		// アイテムを所有している場合位置を右手の座標に合わせる
+		if (playerWk[pn].UseItem)
+		{
+			switch (playerWk[pn].ItemCategory)
+			{
+			case ItemBabel:
+				SetPositionBabel(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].pos);
+				SetRotationBabel(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].rot);
+				break;
+			case ItemKumatyang:
+				SetPositionKumatyang(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].pos);
+				SetRotationKumatyang(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].rot);
+				break;
+			case ItemYakiYaki:
+				SetPositionYakiYaki(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].pos);
+				SetRotationYakiYaki(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].rot);
+				break;
 			}
 		}
 	}
@@ -600,8 +677,14 @@ void ControlPlayer(int pn)
 		// アニメーション終了で待機に戻る
 		if (playerWk[pn].Animation->MotionEnd == true)
 		{
-			playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Idleitem, Data[Idleitem].Spd);
-			playerWk[pn].UseItem = true;
+			if (playerWk[pn].UseItem)
+			{
+				playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Idleitem, Data[Idleitem].Spd);
+			}
+			else
+			{
+				playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Idle, Data[Idle].Spd);
+			}
 			playerWk[pn].HitFrag = false;
 		}
 		break;
@@ -732,26 +815,28 @@ void HitAction(int pn, ENEMY *enemy)
 		AddDamageEnemy(enemy, Data[Jab].Damage);
 		// SE
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[LeftHand].pos, HitEffect);
 		break;
 	case Straight:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Straight].Damage);
 		// SE
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[RightHand].pos, HitEffect);
 		break;
 	case Upper:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Upper].Damage);
 		// SE
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[LeftHand].pos, HitEffect);
 		break;
 	case Kick:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Kick].Damage);
 		// SE
 		// エフェクト
-		break;
-	case Pickup:
+		SetEffect(playerWk[pn].Collision[RightFoot].pos, HitEffect);
 		break;
 	case Attackitem:
 		// ダメージ

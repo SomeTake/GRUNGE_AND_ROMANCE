@@ -38,6 +38,8 @@ HRESULT InitBabel(int type)
 		babelWk[in].D3DXMesh = NULL;
 		babelWk[in].D3DXBuffMat = NULL;
 		babelWk[in].NumMat = 0;
+		babelWk[in].use = true;
+		babelWk[in].pickup = false;
 
 		if (type == 0)
 		{
@@ -99,8 +101,6 @@ void UninitBabel(void)
 //=============================================================================
 void UpdateBabel(void)
 {
-
-
 }
 
 //=============================================================================
@@ -166,3 +166,44 @@ ITEM *GetBabel(int in)
 {
 	return &babelWk[in];
 }
+
+//=============================================================================
+// アイテムを拾ったときに使用
+//=============================================================================
+int SetBabel(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+{
+	int IdxBabel = -1;
+
+	for (int nCntBabel = 0; nCntBabel < BABEL_NUM; nCntBabel++)
+	{
+		if (!babelWk[nCntBabel].pickup)
+		{
+			babelWk[nCntBabel].pos = pos;
+			babelWk[nCntBabel].rot = rot;
+			babelWk[nCntBabel].pickup = true;
+
+			IdxBabel = nCntBabel;
+			break;
+		}
+	}
+
+	return IdxBabel;
+
+}
+
+//=============================================================================
+// 位置の更新
+//=============================================================================
+void SetPositionBabel(int IdxBabel, D3DXVECTOR3 pos)
+{
+	babelWk[IdxBabel].pos = pos;
+}
+
+//=============================================================================
+// 回転の更新
+//=============================================================================
+void SetRotationBabel(int IdxBabel, D3DXVECTOR3 rot)
+{
+	babelWk[IdxBabel].rot = rot;
+}
+

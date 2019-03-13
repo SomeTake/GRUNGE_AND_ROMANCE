@@ -32,3 +32,4 @@
 .vs
 Debug
 Release
+*.vcxproj.user
