@@ -8,6 +8,8 @@
 #include "Blackhole.h"
 #include "Player.h"
 #include "Game.h"
+#include "Effect.h"
+#include "Sound.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -107,6 +109,9 @@ void UninitBlackhole(void)
 //=============================================================================
 void UpdateBlackhole(void)
 {
+	int Check = 0;
+	static bool Flag = false;
+
 	CHARA *charaWk = GetPlayer(0);
 
 	for (int en = 0; en < BLACKHOLE_NUM; en++, charaWk++)
@@ -122,9 +127,23 @@ void UpdateBlackhole(void)
 			// HP0Ç…Ç»Ç¡ÇΩÇÁè¡ñ≈
 			if (blackholeWk[en].HPzan == 0)
 			{
+				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
 				blackholeWk[en].use = false;
 			}
 		}
+		else if ((!Flag) && (!blackholeWk[en].use))
+		{
+			Check++;
+			Flag = true;
+		}
+	}
+
+	if (Check >= BLACKHOLE_NUM)
+	{
+		UninitGame();
+		Set_Game_Index(GAME_TYPE_STAGE_NEXT);
+		InitGame();
+		Update_Effect_Stage_Switch();
 	}
 }
 

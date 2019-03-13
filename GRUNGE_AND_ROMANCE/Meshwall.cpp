@@ -5,6 +5,8 @@
 * 作成日:		2018/1/28
 *******************************************************************************/
 #include "Meshwall.h"
+#include "Game.h"
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -42,11 +44,28 @@ HRESULT InitMeshWall(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXCOLOR col,
 	}
 
 	// テクスチャの読み込み
-	if(!g_pD3DTexture)
+	switch (Get_Game_Index())
 	{
+	case GAME_TYPE_STAGE_ONNA:
+		// テクスチャの読み込み
 		D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
-									TEXTURE_FILENAME,		// ファイルの名前
-									&g_pD3DTexture);		// 読み込むメモリー
+			TEXTURE_FILE_MESH_WALL_000,		// ファイルの名前
+			&g_pD3DTexture);		// 読み込むメモリー
+		break;
+	case GAME_TYPE_STAGE_BLACK_HOLE:
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
+			TEXTURE_FILE_MESH_WALL_001,		// ファイルの名前
+			&g_pD3DTexture);		// 読み込むメモリー
+		break;
+	case GAME_TYPE_STAGE_NEXT:
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
+			TEXTURE_FILE_MESH_WALL_002,		// ファイルの名前
+			&g_pD3DTexture);		// 読み込むメモリー
+		break;
+	default:
+		break;
 	}
 
 	pMesh = &g_aMeshWall[g_nNumMeshField];
