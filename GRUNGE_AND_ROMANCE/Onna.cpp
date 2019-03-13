@@ -6,9 +6,6 @@
 //=============================================================================
 #include "Struct.h"
 #include "Onna.h"
-#include "Sound.h"
-#include "Game.h"
-#include "Effect.h"
 #include "Player.h"
 #include "Debugproc.h"
 #include "Game.h"
@@ -111,9 +108,6 @@ void UninitOnna(void)
 //=============================================================================
 void UpdateOnna(void)
 {
-	int Check = 0;
-	static bool Flag = false;
-
 	CHARA *charaWk = GetPlayer(0);
 	ENEMY *onnaWk = GetOnna(0);
 
@@ -134,23 +128,9 @@ void UpdateOnna(void)
 			// HP0‚É‚È‚Á‚½‚çÁ–Å
 			if (onnaWk[en].HPzan == 0)
 			{
-				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
 				onnaWk[en].use = false;
 			}
 		}
-		else if ((!Flag) && (!onnaWk[en].use))
-		{
-			Check++;
-			Flag = true;
-		}
-	}
-
-	if (Check >= ONNA_NUM)
-	{
-		UninitGame();
-		Set_Game_Index(GAME_TYPE_STAGE_BLACK_HOLE);
-		InitGame();
-		Update_Effect_Stage_Switch();
 	}
 }
 

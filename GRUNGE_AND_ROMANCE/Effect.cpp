@@ -176,39 +176,6 @@ void UpdateEffect(void)
 }
 
 //=============================================================================
-// 更新処理
-//=============================================================================
-void Update_Effect_Stage_Switch(void)
-{
-	static int Count = 0;
-	int Effect_No = 0;
-	int EffectID = 0;
-
-	for (Effect_No = 0; Effect_No < EffectMax; Effect_No++)
-	{
-		if (Effect[Effect_No].use == true)
-		{
-			EffectID = Effect[Effect_No].ID;
-
-			int EffectID = EffectCtrl.Manager->Play(EffectCtrl.Effect[WATER],
-				Effect->Ppos.x, Effect->Ppos.y, Effect->Ppos.z);
-
-			if (GetKeyboardRelease(DIK_P))
-			{
-				EffectCtrl.Manager->StopEffect(Effect[Effect_No].ID);
-				Effect[Effect_No].use = false;
-				continue;
-			}
-		}
-	}
-
-	// エフェクトの更新処理を行う
-	EffectCtrl.Manager->Update();
-
-	return;
-}
-
-//=============================================================================
 // 描画処理
 //=============================================================================
 void DrawEffect(void)

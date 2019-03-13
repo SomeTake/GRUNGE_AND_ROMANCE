@@ -45,7 +45,6 @@ typedef struct
 HRESULT InitEffect(bool FirstInit);
 void UninitEffect(void);
 void UpdateEffect(void);
-void Update_Effect_Stage_Switch(void);
 void DrawEffect(void);
 void SetEffect(D3DXVECTOR3 Pos, int EffectType);
 HRESULT SafeLoadEffect(Effekseer::Manager *Manager, Effekseer::Effect **Effect, const EFK_CHAR* SrcPath, const char* ErrorSrc);

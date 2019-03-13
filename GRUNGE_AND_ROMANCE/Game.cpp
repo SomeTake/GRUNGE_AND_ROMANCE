@@ -13,11 +13,6 @@
 #include "Babel.h"
 #include "Kumatyang.h"
 #include "YakiYaki.h"
-//#include "Meshwall.h"
-#include "Meshfield.h"
-#include "Effect.h"
-#include "Input.h"
-#include "Sound.h"
 #include "Meshfield.h"
 #include "Effect.h"
 #include "Meshwall.h"
@@ -25,34 +20,12 @@
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-int Game_Index = GAME_TYPE_STAGE_ONNA;
 
 //=============================================================================
 // 初期化処理
 //=============================================================================
 HRESULT InitGame(void)
 {
-	switch (Game_Index)
-	{
-	case GAME_TYPE_STAGE_ONNA:
-		InitMeshField(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 16, 16, 80.0f, 80.0f);
-		InitPlayer(0);
-		InitOnna(0);
-		InitGauge(0);
-		InitBabel(0);
-		InitKumatyang(0);
-		InitYakiYaki(0);
-		break;
-	case GAME_TYPE_STAGE_BLACK_HOLE:
-		InitMeshField(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 16, 16, 80.0f, 80.0f);
-		InitBlackhole(0);
-		break;
-	case GAME_TYPE_STAGE_NEXT:
-		InitMeshField(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 16, 16, 80.0f, 80.0f);
-		break;
-	default:
-		break;
-	}
 	InitMeshField(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 16, 16, 80.0f, 80.0f);
 	InitMeshWall(D3DXVECTOR3(0.0f, 0.0f, 640.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
@@ -79,27 +52,6 @@ HRESULT InitGame(void)
 //=============================================================================
 void UninitGame(void)
 {
-	switch (Game_Index)
-	{
-	case GAME_TYPE_STAGE_ONNA:
-		UninitMeshField();
-		UninitOnna();
-		break;
-	case GAME_TYPE_STAGE_BLACK_HOLE:
-		UninitMeshField();
-		UninitBlackhole();
-		break;
-	case GAME_TYPE_STAGE_NEXT:
-		UninitMeshField();
-		UninitPlayer();
-		UninitGauge();
-		UninitBabel();
-		UninitKumatyang();
-		UninitYakiYaki();
-		break;
-	default:
-		break;
-	}
 	UninitMeshField();
 	UninitPlayer();
 	UninitOnna();
@@ -119,51 +71,6 @@ void UninitGame(void)
 //=============================================================================
 void UpdateGame(void)
 {
-	switch (Game_Index)
-	{
-	case GAME_TYPE_STAGE_ONNA:
-		UpdateMeshField();
-		//UpdateMeshWall();
-		UpdatePlayer();
-		UpdateOnna();
-		UpdateGauge();
-		UpdateBabel();
-		UpdateKumatyang();
-		UpdateYakiYaki();
-		UpdateEffect();
-		break;
-	case GAME_TYPE_STAGE_BLACK_HOLE:
-		UpdateMeshField();
-		//UpdateMeshWall();
-		UpdatePlayer();
-		UpdateBlackhole();
-		UpdateGauge();
-		UpdateBabel();
-		UpdateKumatyang();
-		UpdateYakiYaki();
-		UpdateEffect();
-		break;
-	case GAME_TYPE_STAGE_NEXT:
-		UpdateMeshField();
-		//UpdateMeshWall();
-		UpdatePlayer();
-		UpdateGauge();
-		UpdateBabel();
-		UpdateKumatyang();
-		UpdateYakiYaki();
-		UpdateEffect();
-
-		if (GetKeyboardTrigger(DIK_RETURN))
-		{// Enter押したら、ステージを切り替える
-			Stop_Sound(SOUND_TYPE_BGM);
-			Play_Sound(SOUND_TYPE_ENDING, SOUND_PLAY_TYPE_LOOP);
-			SetStage(STAGE_ENDING);
-		}
-
-		break;
-	default:
-		break;
-	}
 	UpdateMeshField();
 	UpdatePlayer();
 	UpdateOnna();
@@ -183,40 +90,6 @@ void UpdateGame(void)
 //=============================================================================
 void DrawGame(void)
 {
-	switch (Game_Index)
-	{
-	case GAME_TYPE_STAGE_ONNA:
-		DrawMeshField();
-		DrawPlayer();
-		DrawOnna();
-		DrawGauge();
-		DrawBabel();
-		DrawKumatyang();
-		DrawYakiYaki();
-		DrawEffect();
-		break;
-	case GAME_TYPE_STAGE_BLACK_HOLE:
-		DrawMeshField();
-		DrawPlayer();
-		DrawGauge();
-		DrawBlackhole();
-		DrawBabel();
-		DrawKumatyang();
-		DrawYakiYaki();
-		DrawEffect();
-		break;
-	case GAME_TYPE_STAGE_NEXT:
-		DrawMeshField();
-		DrawPlayer();
-		DrawGauge();
-		DrawBabel();
-		DrawKumatyang();
-		DrawYakiYaki();
-		DrawEffect();
-		break;
-	default:
-		break;
-	}
 	DrawMeshWall();
 	DrawMeshField();
 	DrawPlayer();
@@ -255,23 +128,6 @@ void AddDamagePlayer(CHARA *player, int damage)
 		player->HPzan = 0;
 	}
 
-}
-
-void Set_Game_Index(int Set_Index)
-{
-	if ((Set_Index < GAME_TYPE_STAGE_ONNA) || (Set_Index > (GAME_TYPE_MAX - 1)))
-	{
-		return;
-	}
-
-	Game_Index = Set_Index;
-
-	return;
-}
-
-int Get_Game_Index(void)
-{
-	return Game_Index;
 }
 
 void EnemyAttack(D3DXVECTOR3 PlayerPos, ENEMY *Enemy, float scl)		// 攻撃する方向の判定＆攻撃のとりまとめ

@@ -6,14 +6,11 @@
 //=============================================================================
 #include "Meshfield.h"
 #include "Input.h"
-#include "Game.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	TEXTURE_FILENAME_000	"data/TEXTURE/Mesh_Field_000.jpg"		// 読み込むテクスチャファイル名
-#define	TEXTURE_FILENAME_001	"data/TEXTURE/Mesh_Field_001.jpg"		// 読み込むテクスチャファイル名
-#define	TEXTURE_FILENAME_002	"data/TEXTURE/Mesh_Field_002.png"		// 読み込むテクスチャファイル名
+#define	TEXTURE_FILENAME	"data/TEXTURE/Concrete.jpg"		// 読み込むテクスチャファイル名
 
 //*****************************************************************************
 // グローバル変数
@@ -45,29 +42,10 @@ HRESULT InitMeshField(D3DXVECTOR3 pos, D3DXVECTOR3 rot,
 
 	g_rotField = rot;
 
-	switch (Get_Game_Index())
-	{
-	case GAME_TYPE_STAGE_ONNA:
-		// テクスチャの読み込み
-		D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
-			TEXTURE_FILENAME_000,		// ファイルの名前
-			&g_pD3DTextureField);	// 読み込むメモリー
-		break;
-	case GAME_TYPE_STAGE_BLACK_HOLE:
-		// テクスチャの読み込み
-		D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
-			TEXTURE_FILENAME_001,		// ファイルの名前
-			&g_pD3DTextureField);	// 読み込むメモリー
-		break;
-	case GAME_TYPE_STAGE_NEXT:
-		// テクスチャの読み込み
-		D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
-			TEXTURE_FILENAME_002,		// ファイルの名前
-			&g_pD3DTextureField);	// 読み込むメモリー
-		break;
-	default:
-		break;
-	}
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
+								TEXTURE_FILENAME,		// ファイルの名前
+								&g_pD3DTextureField);	// 読み込むメモリー
 
 	// ブロック数の設定
 	g_nNumBlockXField = nNumBlockX;

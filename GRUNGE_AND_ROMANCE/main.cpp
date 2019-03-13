@@ -17,7 +17,6 @@
 #include "Onna.h"
 #include "Effect.h"
 #include "Blackhole.h"
-#include "Sound.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -36,7 +35,7 @@ void Draw(void);
 #ifdef _DEBUG
 void DrawFPS(void);
 #endif
-int	g_nStage = STAGE_TITLE;						// ステージ番号
+int	g_nStage = STAGE_GAME;						// ステージ番号
 bool SetWindowCenter(HWND hWnd);
 
 //*****************************************************************************
@@ -125,7 +124,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	D3DXMatrixIdentity(&mat);
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
 
-	Play_Sound(SOUND_TYPE_BGM, SOUND_PLAY_TYPE_LOOP);
 
 	// --------------------------------------  メッセージループ---------------------------------------------
 	while (1)
@@ -323,14 +321,11 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// 入力処理の初期化
 	InitInput(hInstance, hWnd);
-	Initialize_Sound(hWnd);
 	InitCamera();
 	InitLight();
 	InitOpening();
-	Initialize_Title();
+	InitTitle();
 	InitGame();
-	Initialize_Ending();
-	InitEffect(true);
 	InitEnding();
 
 	return S_OK;
@@ -371,13 +366,13 @@ void Uninit(void)
 	UninitOpening();
 
 	// タイトルの終了処理
-	Release_Title();
+	UninitTitle();
 
 	// ゲームの終了処理
 	UninitGame();
 
 	// エンディングの終了処理
-	Release_Ending();
+	UninitEnding();
 
 
 }
@@ -409,11 +404,10 @@ void Update(void)
 	case STAGE_TITLE:
 
 		// タイトル更新
-		Update_Title();
+		UpdateTitle();
 
 		if (GetKeyboardTrigger(DIK_RETURN))
 		{// Enter押したら、ステージを切り替える
-			Play_Sound(SOUND_TYPE_ITEM_PICK, SOUND_PLAY_TYPE_PLAY);
 			SetStage(STAGE_GAME);
 		}
 
@@ -427,17 +421,17 @@ void Update(void)
 		// エフェクト更新
 		UpdateEffect();
 
+		if (GetKeyboardTrigger(DIK_RETURN))
+		{// Enter押したら、ステージを切り替える
+			SetStage(STAGE_ENDING);
+		}
+
 		break;
 
 	case STAGE_ENDING:
 
 		// エンディング更新
-		Update_Ending();
-
-		if (GetKeyboardTrigger(DIK_RETURN))
-		{// Enter押したら、ステージを切り替える
-			PostQuitMessage(0);
-		}
+		UpdateEnding();
 
 		break;
 	}
@@ -474,7 +468,7 @@ void Draw(void)
 		case STAGE_TITLE:
 
 			// タイトル描画
-			Draw_Title();
+			DrawTitle();
 
 			break;
 
@@ -491,7 +485,7 @@ void Draw(void)
 		case STAGE_ENDING:
 
 			// エンディング描画
-			Draw_Ending();
+			DrawEnding();
 
 			break;
 		}
