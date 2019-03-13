@@ -166,3 +166,43 @@ ITEM *GetKumatyang(int in)
 {
 	return &kumatyangWk[in];
 }
+
+//=============================================================================
+// アイテムを拾ったときに使用
+//=============================================================================
+int SetKumatyang(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+{
+	int IdxKumatyang = -1;
+
+	for (int nCntKumatyang = 0; nCntKumatyang < KUMATYANG_NUM; nCntKumatyang++)
+	{
+		if (!kumatyangWk[nCntKumatyang].pickup)
+		{
+			kumatyangWk[nCntKumatyang].pos = pos;
+			kumatyangWk[nCntKumatyang].rot = rot;
+			kumatyangWk[nCntKumatyang].pickup = true;
+
+			IdxKumatyang = nCntKumatyang;
+			break;
+		}
+	}
+
+	return IdxKumatyang;
+
+}
+
+//=============================================================================
+// 位置の更新
+//=============================================================================
+void SetPositionKumatyang(int IdxKumatyang, D3DXVECTOR3 pos)
+{
+	kumatyangWk[IdxKumatyang].pos = pos;
+}
+
+//=============================================================================
+// 回転の更新
+//=============================================================================
+void SetRotationKumatyang(int IdxIdxKumatyang, D3DXVECTOR3 rot)
+{
+	kumatyangWk[IdxIdxKumatyang].rot = rot;
+}

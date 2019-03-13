@@ -166,3 +166,43 @@ ITEM *GetYakiYaki(int in)
 {
 	return &yakiyakiWk[in];
 }
+
+//=============================================================================
+// アイテムを拾ったときに使用
+//=============================================================================
+int SetYakiYaki(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+{
+	int IdxYakiYaki = -1;
+
+	for (int nCntYakiYaki = 0; nCntYakiYaki < YAKIYAKI_NUM; nCntYakiYaki++)
+	{
+		if (!yakiyakiWk[nCntYakiYaki].pickup)
+		{
+			yakiyakiWk[nCntYakiYaki].pos = pos;
+			yakiyakiWk[nCntYakiYaki].rot = rot;
+			yakiyakiWk[nCntYakiYaki].pickup = true;
+
+			IdxYakiYaki = nCntYakiYaki;
+			break;
+		}
+	}
+
+	return IdxYakiYaki;
+
+}
+
+//=============================================================================
+// 位置の更新
+//=============================================================================
+void SetPositionYakiYaki(int IdxYakiYaki, D3DXVECTOR3 pos)
+{
+	yakiyakiWk[IdxYakiYaki].pos = pos;
+}
+
+//=============================================================================
+// 回転の更新
+//=============================================================================
+void SetRotationYakiYaki(int IdxYakiYaki, D3DXVECTOR3 rot)
+{
+	yakiyakiWk[IdxYakiYaki].rot = rot;
+}

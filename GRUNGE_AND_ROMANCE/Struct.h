@@ -12,6 +12,14 @@
 
 
 #define	HIT_CHECK_NUM	(13)								// 当たり判定の数
+#define ITEM_GETVALUE	(10.0f)								// アイテムを拾える範囲
+
+// アイテムの種類
+enum ItemCategory {
+	ItemBabel,
+	ItemKumatyang,
+	ItemYakiYaki,
+};
 
 //*****************************************************************************
 // 構造体定義
@@ -42,6 +50,8 @@ typedef struct {
 	bool				HitFrag;			// 攻撃が当たったかどうか判定するフラグ
 	bool				UseItem;			// アイテムを所持しているかどうか判定するフラグ
 	COLLISION			Collision[HIT_CHECK_NUM];			// 当たり判定用構造体
+	int					ItemIdx;			// 使用しているアイテム番号
+	int					ItemCategory;		// 使用しているアイテムの種類
 }CHARA;
 
 // エネミーキャラクター用
@@ -59,7 +69,7 @@ typedef struct {
 	bool				use;				// 使用中フラグ
 }ENEMY;
 
-// アイテムキャラクター用
+// アイテム用
 typedef struct {
 	LPDIRECT3DTEXTURE9	D3DTexture;			// テクスチャへのポインタ
 	LPD3DXMESH			D3DXMesh;			// メッシュ情報へのポインタ
@@ -69,6 +79,8 @@ typedef struct {
 	D3DXVECTOR3			move;				// モデルの移動量
 	D3DXVECTOR3			rot;				// 現在の向き
 	D3DXVECTOR3			scl;				// モデルの大きさ(スケール)
+	bool				pickup;				// 誰かが持っているかどうかのフラグ
+	bool				use;				// 使用しているかどうかのフラグ
 }ITEM;
 
 #endif
