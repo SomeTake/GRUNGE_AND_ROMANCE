@@ -41,7 +41,14 @@ HRESULT InitPlayer(int type)
 	for (int pn = 0; pn < PLAYER_NUM; pn++)
 	{
 		// 位置・回転・スケールの初期設定
-		playerWk[pn].pos = FIRST_PLAYER_POS;
+		if (pn == 0)
+		{
+			playerWk[pn].pos = P1_PLAYER_POS;
+		}
+		else if (pn == 1)
+		{
+			playerWk[pn].pos = P2_PLAYER_POS;
+		}
 		playerWk[pn].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		playerWk[pn].scl = D3DXVECTOR3(0.35f, 0.35f, 0.35f);
 		playerWk[pn].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -60,9 +67,19 @@ HRESULT InitPlayer(int type)
 			playerWk[pn].Animation = CreateAnimationObject();
 
 			// xFileの読み込み
-			if (FAILED(Load_xFile(playerWk[pn].Animation, CHARA_XFILE, "Player")))
+			if (pn == 0)
 			{
-				return E_FAIL;
+				if (FAILED(Load_xFile(playerWk[pn].Animation, P1_XFILE, "P1")))
+				{
+					return E_FAIL;
+				}
+			}
+			else if (pn == 1)
+			{
+				if (FAILED(Load_xFile(playerWk[pn].Animation, P2_XFILE, "P2")))
+				{
+					return E_FAIL;
+				}
 			}
 
 			// AnimationCallbackをセットする

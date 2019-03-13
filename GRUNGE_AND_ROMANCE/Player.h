@@ -13,10 +13,12 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define CHARA_XFILE			("data/MODEL/Togen.x")
+#define P1_XFILE			("data/MODEL/Togen.x")
+#define P2_XFILE			("data/MODEL/Kyo.x")
 #define PLAYER_NUM		(2)									// プレイヤーの数
 
-#define FIRST_PLAYER_POS	D3DXVECTOR3(0.0f, 0.0f, 0.0f)	// 初期位置
+#define P1_PLAYER_POS	D3DXVECTOR3(10.0f, 0.0f, -10.0f)	// 初期位置
+#define P2_PLAYER_POS	D3DXVECTOR3(-10.0f, 0.0f, 10.0f)	// 初期位置
 #define PLAYER_HP_MAX	(200)
 
 #define VALUE_FRONTWALK	(3.00f)								// 前歩き移動量
