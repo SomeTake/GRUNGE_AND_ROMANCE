@@ -331,6 +331,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	InitGame();
 	Initialize_Ending();
 	InitEffect(true);
+	InitEnding();
 
 	return S_OK;
 }
@@ -378,8 +379,6 @@ void Uninit(void)
 	// エンディングの終了処理
 	Release_Ending();
 
-	//エフェクトの終了処理
-	UninitEffect();
 
 }
 

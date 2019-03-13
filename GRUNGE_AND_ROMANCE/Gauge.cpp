@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "Gauge.h"
 #include "Player.h"
+#include "Onna.h"
 
 //*****************************************************************************
 // グローバル変数
@@ -106,7 +107,7 @@ HRESULT InitGauge(int type)
 	for (int i = 0; i < GAUGE3_MAX; i++, gauge3++)
 	{
 		gauge3->use = true;												// 使用
-		gauge3->pos = D3DXVECTOR3(1000.0f, 30.0f, 0.0f);				// 座標データを初期化
+		gauge3->pos = D3DXVECTOR3(-400.0f, 30.0f, 0.0f);				// 座標データを初期化
 		gauge3->rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 回転データを初期化
 
 		gauge3->g_pD3DTexture3 = g_pD3DTextureGauge3;					// テクスチャ情報
@@ -116,7 +117,7 @@ HRESULT InitGauge(int type)
 	for (int i = 0; i < GAUGE4_MAX; i++, gauge4++)
 	{
 		gauge4->use = true;												// 使用
-		gauge4->pos = D3DXVECTOR3(1000.0f, 70.0f, 0.0f);				// 座標データを初期化
+		gauge4->pos = D3DXVECTOR3(-400.0f, 70.0f, 0.0f);				// 座標データを初期化
 		gauge4->rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 回転データを初期化
 		gauge4->g_pD3DTexture4 = g_pD3DTextureGauge4;					// テクスチャ情報
 		MakeVertexGauge();												// 頂点情報の作成
@@ -134,7 +135,7 @@ HRESULT InitGauge(int type)
 	for (int i = 0; i < GAUGE6_MAX; i++, gauge6++)
 	{
 		gauge6->use = true;												// 使用
-		gauge6->pos = D3DXVECTOR3(1000.0f, 70.0f, 0.0f);				// 座標データを初期化
+		gauge6->pos = D3DXVECTOR3(-400.0f, 70.0f, 0.0f);				// 座標データを初期化
 		gauge6->rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 回転データを初期化
 		gauge6->g_pD3DTexture6 = g_pD3DTextureGauge6;					// テクスチャ情報
 		MakeVertexGauge();												// 頂点情報の作成
@@ -191,27 +192,26 @@ void UpdateGauge(void)
 	GAUGE5 *gauge5 = gaugeWk5;						// gauge5のポインターを初期化
 	GAUGE6 *gauge6 = gaugeWk6;						// gauge6のポインターを初期化
 
-		gauge2->pos.x +=4.0f;
-		gauge->pos.x += 4.0f;
+		gauge->pos.x +=4.0f;
+		gauge2->pos.x += 4.0f;
 		gauge5->pos.x += 4.0f;
 
-		if (gauge2->pos.x >= 0.0f)
+		if (gauge->pos.x >= 0.0f)
 		{
-			gauge2->pos.x = 0;
 			gauge->pos.x = 0;
+			gauge2->pos.x = 0;
 			gauge5->pos.x = 0;
-
 		}
-		gauge4->pos.x -= 4.0f;
-		gauge3->pos.x -= 4.0f;
-		gauge6->pos.x -= 4.0f;
 
-		if (gauge4->pos.x <= 600.0f)
+		gauge3->pos.x += 4.0f;
+		gauge4->pos.x += 4.0f;
+		gauge6->pos.x += 4.0f;
+
+		if (gauge3->pos.x >= 210.0f)
 		{
-			gauge4->pos.x = 600;
-			gauge3->pos.x = 600;
-			gauge6->pos.x = 600;
-
+			gauge3->pos.x = 210;
+			gauge4->pos.x = 210;
+			gauge6->pos.x = 210;
 		}
 
 		SetVertexGauge();
@@ -474,9 +474,9 @@ void SetVertexGauge(void)
 
 		// 頂点座標の設定
 		gauge2->vertexWk2[0].vtx = D3DXVECTOR3(gauge2->pos.x-0.5f, gauge2->pos.y - 0.5f, 0.0f);
-		gauge2->vertexWk2[1].vtx = D3DXVECTOR3(gauge2->pos.x + chara->HP - 0.5f, gauge2->pos.y - 0.5f, 0.0f);
-		gauge2->vertexWk2[2].vtx = D3DXVECTOR3(gauge2->pos.x - 0.5f, gauge2->pos.y + GAUGE2_SIZE_Y - 0.5f, 0.0f);
-		gauge2->vertexWk2[3].vtx = D3DXVECTOR3(gauge2->pos.x + chara->HP - 0.5f, gauge2->pos.y + GAUGE2_SIZE_Y - 0.5f, 0.0f);
+		gauge2->vertexWk2[1].vtx = D3DXVECTOR3(gauge2->pos.x -0.5f, gauge2->pos.y - 0.5f, 0.0f);
+		gauge2->vertexWk2[2].vtx = D3DXVECTOR3(gauge2->pos.x - 0.5f, gauge2->pos.y + chara[0].HPzan * 2 - 0.5f, 0.0f);
+		gauge2->vertexWk2[3].vtx = D3DXVECTOR3(gauge2->pos.x - 0.5f, gauge2->pos.y + chara[0].HPzan * 2 - 0.5f, 0.0f);
 
 		gauge->vertexWk[0].vtx = D3DXVECTOR3(gauge->pos.x-0.5f, gauge->pos.y-0.5f, 0.0f);
 		gauge->vertexWk[1].vtx = D3DXVECTOR3(gauge->pos.x + GAUGE_SIZE_X-0.5f, gauge->pos.y-0.5f, 0.0f);
@@ -490,10 +490,10 @@ void SetVertexGauge(void)
 
 
 		// 頂点座標の設定
-		gauge4->vertexWk4[0].vtx = D3DXVECTOR3(gauge4->pos.x, gauge4->pos.y, 0.0f);
-		gauge4->vertexWk4[1].vtx = D3DXVECTOR3(gauge4->pos.x + chara->HP, gauge4->pos.y, 0.0f);
-		gauge4->vertexWk4[2].vtx = D3DXVECTOR3(gauge4->pos.x, gauge4->pos.y + GAUGE4_SIZE_Y, 0.0f);
-		gauge4->vertexWk4[3].vtx = D3DXVECTOR3(gauge4->pos.x + chara->HP, gauge4->pos.y + GAUGE4_SIZE_Y, 0.0f);
+		gauge4->vertexWk4[0].vtx = D3DXVECTOR3(gauge4->pos.x - 0.5f, gauge4->pos.y - 0.5f, 0.0f);
+		gauge4->vertexWk4[1].vtx = D3DXVECTOR3(gauge4->pos.x - 0.5f, gauge4->pos.y - 0.5f, 0.0f);
+		gauge4->vertexWk4[2].vtx = D3DXVECTOR3(gauge4->pos.x - 0.5f, gauge4->pos.y + chara[1].HPzan * 2 - 0.5f, 0.0f);
+		gauge4->vertexWk4[3].vtx = D3DXVECTOR3(gauge4->pos.x - 0.5f, gauge4->pos.y + chara[1].HPzan * 2 - 0.5f, 0.0f);
 
 		gauge3->vertexWk3[0].vtx = D3DXVECTOR3(gauge3->pos.x - 0.5f, gauge3->pos.y - 0.5f, 0.0f);
 		gauge3->vertexWk3[1].vtx = D3DXVECTOR3(gauge3->pos.x + GAUGE3_SIZE_X - 0.5f, gauge3->pos.y - 0.5f, 0.0f);
@@ -504,7 +504,6 @@ void SetVertexGauge(void)
 		gauge6->vertexWk6[1].vtx = D3DXVECTOR3(gauge6->pos.x + GAUGE6_SIZE_X - 0.5f, gauge6->pos.y - 0.5f, 0.0f);
 		gauge6->vertexWk6[2].vtx = D3DXVECTOR3(gauge6->pos.x - 0.5f, gauge6->pos.y + GAUGE6_SIZE_Y - 0.5f, 0.0f);
 		gauge6->vertexWk6[3].vtx = D3DXVECTOR3(gauge6->pos.x + GAUGE6_SIZE_X - 0.5f, gauge6->pos.y + GAUGE6_SIZE_Y - 0.5f, 0.0f);
-
 
 }
 //=============================================================================
@@ -519,16 +518,15 @@ void SetTextuerGauge(void)
 
 		// テクスチャ座標の設定
 		gauge2->vertexWk2[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-		gauge2->vertexWk2[1].tex = D3DXVECTOR2((float)chara->HP / chara->HPzan, 0.0f);
-		gauge2->vertexWk2[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-		gauge2->vertexWk2[3].tex = D3DXVECTOR2((float)chara->HP / chara->HPzan, 1.0f);
+		gauge2->vertexWk2[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+		gauge2->vertexWk2[2].tex = D3DXVECTOR2(0.0f, (float)chara[0].HPzan / chara[0].HP);
+		gauge2->vertexWk2[3].tex = D3DXVECTOR2(1.0f, (float)chara[0].HPzan / chara[0].HP);
 
 		// テクスチャ座標の設定
 		gauge4->vertexWk4[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-		gauge4->vertexWk4[1].tex = D3DXVECTOR2((float)chara->HP / chara->HPzan, 0.0f);
-		gauge4->vertexWk4[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-		gauge4->vertexWk4[3].tex = D3DXVECTOR2((float)chara->HP / chara->HPzan, 1.0f);
-
+		gauge4->vertexWk4[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+		gauge4->vertexWk4[2].tex = D3DXVECTOR2(0.0f, (float)chara[1].HPzan / chara[1].HP);
+		gauge4->vertexWk4[3].tex = D3DXVECTOR2(1.0f, (float)chara[1].HPzan / chara[1].HP);
 }
 //=============================================================================
 // gauge取得関数

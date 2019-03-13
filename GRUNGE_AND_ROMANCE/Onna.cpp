@@ -9,6 +9,9 @@
 #include "Sound.h"
 #include "Game.h"
 #include "Effect.h"
+#include "Player.h"
+#include "Debugproc.h"
+#include "Game.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -35,7 +38,8 @@ HRESULT InitOnna(int type)
 		// 位置・回転・スケールの初期設定
 		onnaWk[en].HP = ONNA_HP_MAX;
 		onnaWk[en].HPzan = onnaWk[en].HP;
-		onnaWk[en].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		onnaWk[en].pos = D3DXVECTOR3(-100.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
+		onnaWk[en].Epos = D3DXVECTOR3(0.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
 		onnaWk[en].rot = D3DXVECTOR3(0.0f, ONNA_DIRECTION, 0.0f);
 		onnaWk[en].scl = D3DXVECTOR3(ONNA_SCALE, ONNA_SCALE, ONNA_SCALE);
 
@@ -44,6 +48,8 @@ HRESULT InitOnna(int type)
 		onnaWk[en].D3DXBuffMat = NULL;
 		onnaWk[en].NumMat = 0;
 		onnaWk[en].use = true;
+		onnaWk[en].IdleFlag = true;
+		onnaWk[en].AttackFlag = false;
 
 		if (type == 0)
 		{
@@ -108,11 +114,23 @@ void UpdateOnna(void)
 	int Check = 0;
 	static bool Flag = false;
 
-	for (int en = 0; en < ONNA_NUM; en++)
+	CHARA *charaWk = GetPlayer(0);
+	ENEMY *onnaWk = GetOnna(0);
+
+#ifdef _DEBUG
+	PrintDebugProc("攻撃フラグ %s", onnaWk[0].AttackFlag ? "true":"false");
+	PrintDebugProc("位置決定フラグ %s", onnaWk[0].IdleFlag ? "true" : "false");
+#endif
+	for (int en = 0; en < ONNA_NUM; en++, charaWk++)
 	{
 		// 使用している場合のみ更新
 		if (onnaWk[en].use)
 		{
+			// エネミーの攻撃
+			EnemyAttack(charaWk->pos, &onnaWk[en], ONNA_XSCALE);
+
+			SetVertexOnna();
+
 			// HP0になったら消滅
 			if (onnaWk[en].HPzan == 0)
 			{
@@ -192,6 +210,22 @@ void DrawOnna(void)
 		}
 
 	}
+}
+
+//=============================================================================
+// 頂点座標の設定
+//=============================================================================
+void SetVertexOnna(void)
+{
+	if (onnaWk->Direction == false)
+	{
+		onnaWk->rot.y = ONNA_DIRECTION2;
+	}
+	else if (onnaWk->Direction == true)
+	{
+		onnaWk->rot.y = ONNA_DIRECTION;
+	}
+
 }
 
 //=============================================================================
