@@ -33,4 +33,6 @@ ITEM *GetBabel(int in);
 int SetBabel(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 void SetPositionBabel(int IdxBabel, D3DXVECTOR3 pos);
 void SetRotationBabel(int IdxBabel, D3DXVECTOR3 rot);
+void SetThrowedBabel(int Idx);
+
 #endif

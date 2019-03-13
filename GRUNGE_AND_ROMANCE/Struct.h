@@ -13,6 +13,9 @@
 
 #define	HIT_CHECK_NUM	(13)								// 当たり判定の数
 #define ITEM_GETVALUE	(10.0f)								// アイテムを拾える範囲
+#define ITEM_THROWED_SPEED	(5.0f)							// アイテムを投げた時のスピード
+
+#define ENEMY_DAMAGE	(10)								// 敵の攻撃ダメージ
 
 // アイテムの種類
 enum ItemCategory {
@@ -85,6 +88,7 @@ typedef struct {
 	D3DXVECTOR3			scl;				// モデルの大きさ(スケール)
 	bool				pickup;				// 誰かが持っているかどうかのフラグ
 	bool				use;				// 使用しているかどうかのフラグ
+	bool				throwed;			// 投げられているかどうかのフラグ
 }ITEM;
 
 #endif

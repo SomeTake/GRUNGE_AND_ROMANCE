@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "Debugproc.h"
 #include "Game.h"
+#include "Collision.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -109,26 +110,45 @@ void UninitOnna(void)
 void UpdateOnna(void)
 {
 	CHARA *charaWk = GetPlayer(0);
-	ENEMY *onnaWk = GetOnna(0);
 
 #ifdef _DEBUG
-	PrintDebugProc("攻撃フラグ %s", onnaWk[0].AttackFlag ? "true":"false");
+	PrintDebugProc("攻撃フラグ %s", onnaWk[0].AttackFlag ? "true" : "false");
 	PrintDebugProc("位置決定フラグ %s", onnaWk[0].IdleFlag ? "true" : "false");
 #endif
-	for (int en = 0; en < ONNA_NUM; en++, charaWk++)
+	for (int en = 0; en < ONNA_NUM; en++)
 	{
-		// 使用している場合のみ更新
-		if (onnaWk[en].use)
+		for (int pn = 0; pn < PLAYER_NUM; pn++, charaWk++)
 		{
-			// エネミーの攻撃
-			EnemyAttack(charaWk->pos, &onnaWk[en], ONNA_XSCALE);
 
-			SetVertexOnna();
-
-			// HP0になったら消滅
-			if (onnaWk[en].HPzan == 0)
+			// 使用している場合のみ更新
+			if (onnaWk[en].use)
 			{
-				onnaWk[en].use = false;
+				// エネミーの攻撃
+				EnemyAttack(charaWk->pos, &onnaWk[en], ONNA_XSCALE);
+
+				SetVertexOnna();
+
+				// HP0になったら消滅
+				if (onnaWk[en].HPzan == 0)
+				{
+					onnaWk[en].use = false;
+				}
+
+				// 攻撃中の当たり判定
+				if (onnaWk[en].AttackFlag)
+				{
+					if (charaWk->Animation->CurrentAnimID == Idle || charaWk->Animation->CurrentAnimID == Walk
+						|| charaWk->Animation->CurrentAnimID == Rightwalk || charaWk->Animation->CurrentAnimID == Leftwalk
+						|| charaWk->Animation->CurrentAnimID == Idleitem)
+					{
+						if (HitCheckEToP(&onnaWk[en], charaWk))
+						{
+							onnaWk[en].AttackFlag = false;
+							charaWk->Animation->ChangeAnimation(charaWk->Animation, Reaction, Data[Reaction].Spd);
+							charaWk->HPzan -= ENEMY_DAMAGE;
+						}
+					}
+				}
 			}
 		}
 	}

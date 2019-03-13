@@ -33,5 +33,6 @@ ITEM *GetYakiYaki(int in);
 int SetYakiYaki(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 void SetPositionYakiYaki(int IdxBabel, D3DXVECTOR3 pos);
 void SetRotationYakiYaki(int IdxBabel, D3DXVECTOR3 rot);
+void SetThrowedYakiYaki(int Idx);
 
 #endif

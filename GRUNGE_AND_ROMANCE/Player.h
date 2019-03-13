@@ -19,7 +19,7 @@
 #define FIRST_PLAYER_POS	D3DXVECTOR3(0.0f, 0.0f, 0.0f)	// 初期位置
 #define PLAYER_HP_MAX	(200)
 
-#define VALUE_FRONTWALK	(1.50f)								// 前歩き移動量
+#define VALUE_FRONTWALK	(3.00f)								// 前歩き移動量
 #define	VALUE_SIDESTEP	(1.00f)								// 横歩き移動量
 #define VALUE_HALF		(0.5f)								// 何らかの値を半分にするために掛ける
 

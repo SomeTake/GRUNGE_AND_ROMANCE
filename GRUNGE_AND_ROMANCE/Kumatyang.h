@@ -33,5 +33,6 @@ ITEM *GetKumatyang(int in);
 int SetKumatyang(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 void SetPositionKumatyang(int IdxIdxKumatyang, D3DXVECTOR3 pos);
 void SetRotationKumatyang(int IdxIdxKumatyang, D3DXVECTOR3 rot);
+void SetThrowedKumatyang(int Idx);
 
 #endif

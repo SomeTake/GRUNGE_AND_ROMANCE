@@ -6,6 +6,10 @@
 //=============================================================================
 #include "Struct.h"
 #include "Babel.h"
+#include "Onna.h"
+#include "Blackhole.h"
+#include "Collision.h"
+#include "Player.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -40,6 +44,7 @@ HRESULT InitBabel(int type)
 		babelWk[in].NumMat = 0;
 		babelWk[in].use = true;
 		babelWk[in].pickup = false;
+		babelWk[in].throwed = false;
 
 		if (type == 0)
 		{
@@ -101,6 +106,50 @@ void UninitBabel(void)
 //=============================================================================
 void UpdateBabel(void)
 {
+	ENEMY *Onna = GetOnna(0);
+	ENEMY *Black = GetBlackhole(0);
+
+	for (int in = 0; in < BABEL_NUM; in++)
+	{
+		if (babelWk[in].use)
+		{
+			if (babelWk[in].throwed)
+			{
+				// 移動計算
+				babelWk[in].move.x -= sinf(babelWk[in].rot.y) * ITEM_THROWED_SPEED;
+				babelWk[in].move.z -= cosf(babelWk[in].rot.y) * ITEM_THROWED_SPEED;
+
+				babelWk[in].pos += babelWk[in].move;
+				babelWk[in].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+				// 当たり判定
+				for (int en = 0; en < ONNA_NUM; en++, Onna++)
+				{
+					if (HitCheckIToE(&babelWk[in], Onna))
+					{
+						babelWk[in].use = false;
+						Onna->HPzan -= Data[Throwitem].Damage;
+					}
+				}
+
+				for (int en = 0; en < ONNA_NUM; en++, Black++)
+				{
+					if (HitCheckIToE(&babelWk[in], Black))
+					{
+						babelWk[in].use = false;
+						Black->HPzan -= Data[Throwitem].Damage;
+					}
+				}
+
+				// 画面外判定
+				if (babelWk[in].pos.x >= 1000.0f || babelWk[in].pos.x <= -1000.0f)
+				{
+					babelWk[in].use = false;
+				}
+
+			}
+		}
+	}
 }
 
 //=============================================================================
@@ -116,45 +165,48 @@ void DrawBabel(void)
 
 	for (int in = 0; in < BABEL_NUM; in++)
 	{
-		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&g_mtxWorld);
-
-		// スケールを反映
-		D3DXMatrixScaling(&mtxScl, babelWk[in].scl.x, babelWk[in].scl.y, babelWk[in].scl.z);
-		D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxScl);
-
-		// 回転を反映
-		D3DXMatrixRotationYawPitchRoll(&mtxRot, babelWk[in].rot.y, babelWk[in].rot.x, babelWk[in].rot.z);
-		D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxRot);
-
-		// 移動を反映
-		D3DXMatrixTranslation(&mtxTranslate, babelWk[in].pos.x, babelWk[in].pos.y, babelWk[in].pos.z);
-		D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxTranslate);
-
-		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &g_mtxWorld);
-
-		// 現在のマテリアルを取得
-		pDevice->GetMaterial(&matDef);
-
-		// マテリアル情報に対するポインタを取得
-		pD3DXMat = (D3DXMATERIAL*)babelWk[in].D3DXBuffMat->GetBufferPointer();
-
-		for (int nCntMat = 0; nCntMat < (int)babelWk[in].NumMat; nCntMat++)
+		if (babelWk[in].use)
 		{
-			// マテリアルの設定
-			pDevice->SetMaterial(&pD3DXMat[nCntMat].MatD3D);
 
-			// テクスチャの設定
-			pDevice->SetTexture(0, babelWk[in].D3DTexture);
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&g_mtxWorld);
 
-			// 描画
-			babelWk[in].D3DXMesh->DrawSubset(nCntMat);
+			// スケールを反映
+			D3DXMatrixScaling(&mtxScl, babelWk[in].scl.x, babelWk[in].scl.y, babelWk[in].scl.z);
+			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxScl);
+
+			// 回転を反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, babelWk[in].rot.y, babelWk[in].rot.x, babelWk[in].rot.z);
+			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxRot);
+
+			// 移動を反映
+			D3DXMatrixTranslation(&mtxTranslate, babelWk[in].pos.x, babelWk[in].pos.y, babelWk[in].pos.z);
+			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxTranslate);
+
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &g_mtxWorld);
+
+			// 現在のマテリアルを取得
+			pDevice->GetMaterial(&matDef);
+
+			// マテリアル情報に対するポインタを取得
+			pD3DXMat = (D3DXMATERIAL*)babelWk[in].D3DXBuffMat->GetBufferPointer();
+
+			for (int nCntMat = 0; nCntMat < (int)babelWk[in].NumMat; nCntMat++)
+			{
+				// マテリアルの設定
+				pDevice->SetMaterial(&pD3DXMat[nCntMat].MatD3D);
+
+				// テクスチャの設定
+				pDevice->SetTexture(0, babelWk[in].D3DTexture);
+
+				// 描画
+				babelWk[in].D3DXMesh->DrawSubset(nCntMat);
+			}
+
+			// マテリアルをデフォルトに戻す
+			pDevice->SetMaterial(&matDef);
 		}
-
-		// マテリアルをデフォルトに戻す
-		pDevice->SetMaterial(&matDef);
-
 	}
 }
 
@@ -207,3 +259,8 @@ void SetRotationBabel(int IdxBabel, D3DXVECTOR3 rot)
 	babelWk[IdxBabel].rot = rot;
 }
 
+void SetThrowedBabel(int Idx)
+{
+	babelWk[Idx].throwed = true;
+	babelWk[Idx].pickup = false;
+}

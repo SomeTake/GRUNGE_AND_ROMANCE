@@ -8,6 +8,7 @@
 #include "Blackhole.h"
 #include "Player.h"
 #include "Game.h"
+#include "Collision.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -109,21 +110,42 @@ void UpdateBlackhole(void)
 {
 	CHARA *charaWk = GetPlayer(0);
 
-	for (int en = 0; en < BLACKHOLE_NUM; en++, charaWk++)
+	for (int en = 0; en < BLACKHOLE_NUM; en++)
 	{
-		// 使用している場合のみ更新
-		if (blackholeWk[en].use)
+		for (int pn = 0; pn < PLAYER_NUM; pn++, charaWk++)
 		{
-			// エネミーの攻撃
-			EnemyAttack(charaWk->pos, &blackholeWk[en], BLACKHOLE_XSCALE);
 
-			SetVertexBlackhole();
-
-			// HP0になったら消滅
-			if (blackholeWk[en].HPzan == 0)
+			// 使用している場合のみ更新
+			if (blackholeWk[en].use)
 			{
-				blackholeWk[en].use = false;
+				// エネミーの攻撃
+				EnemyAttack(charaWk->pos, &blackholeWk[en], BLACKHOLE_XSCALE);
+
+				SetVertexBlackhole();
+
+				// HP0になったら消滅
+				if (blackholeWk[en].HPzan == 0)
+				{
+					blackholeWk[en].use = false;
+				}
+
+				// 攻撃中の当たり判定
+				if (blackholeWk[en].AttackFlag)
+				{
+					if (charaWk->Animation->CurrentAnimID == Idle || charaWk->Animation->CurrentAnimID == Walk
+						|| charaWk->Animation->CurrentAnimID == Rightwalk || charaWk->Animation->CurrentAnimID == Leftwalk
+						|| charaWk->Animation->CurrentAnimID == Idleitem)
+					{
+						if (HitCheckEToP(&blackholeWk[en], charaWk))
+						{
+							blackholeWk[en].AttackFlag = false;
+							charaWk->Animation->ChangeAnimation(charaWk->Animation, Reaction, Data[Reaction].Spd);
+							charaWk->HPzan -= ENEMY_DAMAGE;
+						}
+					}
+				}
 			}
+
 		}
 	}
 }

@@ -6,6 +6,7 @@
 //=============================================================================
 #include "Collision.h"
 #include "Player.h"
+#include "Onna.h"
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -261,5 +262,24 @@ bool HitCheckPToI(CHARA *Player, ITEM *Item)
 		break;
 	}
 
+	return false;
+}
+
+bool HitCheckIToE(ITEM *Item, ENEMY *Enemy)		// 投げられたアイテムと敵との当たり判定
+{
+	if (HitSphere(Item->pos, Enemy->pos, ITEM_GETVALUE, ONNA_XSCALE))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool HitCheckEToP(ENEMY *Enemy, CHARA *Player)		// 敵の攻撃とプレイヤーとの当たり判定
+{
+	if (HitSphere(Enemy->pos, Player->pos, ONNA_XSCALE, HitRadius[Hips]))
+	{
+		return true;
+	}
 	return false;
 }

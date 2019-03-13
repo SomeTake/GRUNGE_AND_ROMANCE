@@ -6,6 +6,10 @@
 //=============================================================================
 #include "Struct.h"
 #include "Kumatyang.h"
+#include "Onna.h"
+#include "Blackhole.h"
+#include "Collision.h"
+#include "Player.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -29,37 +33,43 @@ HRESULT InitKumatyang(int type)
 
 	for (int in = 0; in < KUMATYANG_NUM; in++)
 	{
-		// 位置・回転・スケールの初期設定
-		kumatyangWk[in].pos = D3DXVECTOR3(CreateRandomFloat(-100.0f, 100.0f), 0.0f, CreateRandomFloat(-10.0f, 10.0f));
-		kumatyangWk[in].rot = D3DXVECTOR3(0.0f, KUMATYANG_DIRECTION, 0.0f);
-		kumatyangWk[in].scl = D3DXVECTOR3(KUMATYANG_SCALE, KUMATYANG_SCALE, KUMATYANG_SCALE);
-
-		kumatyangWk[in].D3DTexture = NULL;
-		kumatyangWk[in].D3DXMesh = NULL;
-		kumatyangWk[in].D3DXBuffMat = NULL;
-		kumatyangWk[in].NumMat = 0;
-
-		if (type == 0)
+		if (kumatyangWk[in].use)
 		{
-			// Xファイルの読み込み
-			if (FAILED(D3DXLoadMeshFromX(KUMATYANG_XFILE,		// 読み込むモデルファイル名(Xファイル)
-				D3DXMESH_SYSTEMMEM,							// メッシュの作成オプションを指定
-				pDevice,									// IDirect3DDevice9インターフェイスへのポインタ
-				NULL,										// 隣接性データを含むバッファへのポインタ
-				&kumatyangWk[in].D3DXBuffMat,					// マテリアルデータを含むバッファへのポインタ
-				NULL,										// エフェクトインスタンスの配列を含むバッファへのポインタ
-				&kumatyangWk[in].NumMat,						// D3DXMATERIAL構造体の数
-				&kumatyangWk[in].D3DXMesh)))					// ID3DXMeshインターフェイスへのポインタのアドレス
+			// 位置・回転・スケールの初期設定
+			kumatyangWk[in].pos = D3DXVECTOR3(CreateRandomFloat(-100.0f, 100.0f), 0.0f, CreateRandomFloat(-10.0f, 10.0f));
+			kumatyangWk[in].rot = D3DXVECTOR3(0.0f, KUMATYANG_DIRECTION, 0.0f);
+			kumatyangWk[in].scl = D3DXVECTOR3(KUMATYANG_SCALE, KUMATYANG_SCALE, KUMATYANG_SCALE);
+
+			kumatyangWk[in].D3DTexture = NULL;
+			kumatyangWk[in].D3DXMesh = NULL;
+			kumatyangWk[in].D3DXBuffMat = NULL;
+			kumatyangWk[in].NumMat = 0;
+			kumatyangWk[in].use = true;
+			kumatyangWk[in].pickup = false;
+			kumatyangWk[in].throwed = false;
+
+			if (type == 0)
 			{
-				return E_FAIL;
-			}
+				// Xファイルの読み込み
+				if (FAILED(D3DXLoadMeshFromX(KUMATYANG_XFILE,		// 読み込むモデルファイル名(Xファイル)
+					D3DXMESH_SYSTEMMEM,							// メッシュの作成オプションを指定
+					pDevice,									// IDirect3DDevice9インターフェイスへのポインタ
+					NULL,										// 隣接性データを含むバッファへのポインタ
+					&kumatyangWk[in].D3DXBuffMat,					// マテリアルデータを含むバッファへのポインタ
+					NULL,										// エフェクトインスタンスの配列を含むバッファへのポインタ
+					&kumatyangWk[in].NumMat,						// D3DXMATERIAL構造体の数
+					&kumatyangWk[in].D3DXMesh)))					// ID3DXMeshインターフェイスへのポインタのアドレス
+				{
+					return E_FAIL;
+				}
 
 #if 0
-			// テクスチャの読み込み
-			D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
-				TEXTURE_FILENAME,		// ファイルの名前
-				&kumatyangWk[en].D3DTexture);	// 読み込むメモリー
+				// テクスチャの読み込み
+				D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
+					TEXTURE_FILENAME,		// ファイルの名前
+					&kumatyangWk[en].D3DTexture);	// 読み込むメモリー
 #endif
+			}
 		}
 	}
 
@@ -99,8 +109,50 @@ void UninitKumatyang(void)
 //=============================================================================
 void UpdateKumatyang(void)
 {
+	ENEMY *Onna = GetOnna(0);
+	ENEMY *Black = GetBlackhole(0);
 
+	for (int in = 0; in < KUMATYANG_NUM; in++)
+	{
+		if (kumatyangWk[in].use)
+		{
+			if (kumatyangWk[in].throwed)
+			{
+				// 移動計算
+				kumatyangWk[in].move.x -= sinf(kumatyangWk[in].rot.y) * ITEM_THROWED_SPEED;
+				kumatyangWk[in].move.z -= cosf(kumatyangWk[in].rot.y) * ITEM_THROWED_SPEED;
 
+				kumatyangWk[in].pos += kumatyangWk[in].move;
+				kumatyangWk[in].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+				// 当たり判定
+				for (int en = 0; en < ONNA_NUM; en++, Onna++)
+				{
+					if (HitCheckIToE(&kumatyangWk[in], Onna))
+					{
+						kumatyangWk[in].use = false;
+						Onna->HPzan -= Data[Throwitem].Damage;
+					}
+				}
+
+				for (int en = 0; en < ONNA_NUM; en++, Black++)
+				{
+					if (HitCheckIToE(&kumatyangWk[in], Black))
+					{
+						kumatyangWk[in].use = false;
+						Black->HPzan -= Data[Throwitem].Damage;
+					}
+				}
+
+				// 画面外判定
+				if (kumatyangWk[in].pos.x >= 1000.0f || kumatyangWk[in].pos.x <= -1000.0f)
+				{
+					kumatyangWk[in].use = false;
+				}
+
+			}
+		}
+	}
 }
 
 //=============================================================================
@@ -116,45 +168,47 @@ void DrawKumatyang(void)
 
 	for (int in = 0; in < KUMATYANG_NUM; in++)
 	{
-		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&g_mtxWorld);
-
-		// スケールを反映
-		D3DXMatrixScaling(&mtxScl, kumatyangWk[in].scl.x, kumatyangWk[in].scl.y, kumatyangWk[in].scl.z);
-		D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxScl);
-
-		// 回転を反映
-		D3DXMatrixRotationYawPitchRoll(&mtxRot, kumatyangWk[in].rot.y, kumatyangWk[in].rot.x, kumatyangWk[in].rot.z);
-		D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxRot);
-
-		// 移動を反映
-		D3DXMatrixTranslation(&mtxTranslate, kumatyangWk[in].pos.x, kumatyangWk[in].pos.y, kumatyangWk[in].pos.z);
-		D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxTranslate);
-
-		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &g_mtxWorld);
-
-		// 現在のマテリアルを取得
-		pDevice->GetMaterial(&matDef);
-
-		// マテリアル情報に対するポインタを取得
-		pD3DXMat = (D3DXMATERIAL*)kumatyangWk[in].D3DXBuffMat->GetBufferPointer();
-
-		for (int nCntMat = 0; nCntMat < (int)kumatyangWk[in].NumMat; nCntMat++)
+		if (kumatyangWk[in].use)
 		{
-			// マテリアルの設定
-			pDevice->SetMaterial(&pD3DXMat[nCntMat].MatD3D);
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&g_mtxWorld);
 
-			// テクスチャの設定
-			pDevice->SetTexture(0, kumatyangWk[in].D3DTexture);
+			// スケールを反映
+			D3DXMatrixScaling(&mtxScl, kumatyangWk[in].scl.x, kumatyangWk[in].scl.y, kumatyangWk[in].scl.z);
+			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxScl);
 
-			// 描画
-			kumatyangWk[in].D3DXMesh->DrawSubset(nCntMat);
+			// 回転を反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, kumatyangWk[in].rot.y, kumatyangWk[in].rot.x, kumatyangWk[in].rot.z);
+			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxRot);
+
+			// 移動を反映
+			D3DXMatrixTranslation(&mtxTranslate, kumatyangWk[in].pos.x, kumatyangWk[in].pos.y, kumatyangWk[in].pos.z);
+			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxTranslate);
+
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &g_mtxWorld);
+
+			// 現在のマテリアルを取得
+			pDevice->GetMaterial(&matDef);
+
+			// マテリアル情報に対するポインタを取得
+			pD3DXMat = (D3DXMATERIAL*)kumatyangWk[in].D3DXBuffMat->GetBufferPointer();
+
+			for (int nCntMat = 0; nCntMat < (int)kumatyangWk[in].NumMat; nCntMat++)
+			{
+				// マテリアルの設定
+				pDevice->SetMaterial(&pD3DXMat[nCntMat].MatD3D);
+
+				// テクスチャの設定
+				pDevice->SetTexture(0, kumatyangWk[in].D3DTexture);
+
+				// 描画
+				kumatyangWk[in].D3DXMesh->DrawSubset(nCntMat);
+			}
+
+			// マテリアルをデフォルトに戻す
+			pDevice->SetMaterial(&matDef);
 		}
-
-		// マテリアルをデフォルトに戻す
-		pDevice->SetMaterial(&matDef);
-
 	}
 }
 
@@ -205,4 +259,10 @@ void SetPositionKumatyang(int IdxKumatyang, D3DXVECTOR3 pos)
 void SetRotationKumatyang(int IdxIdxKumatyang, D3DXVECTOR3 rot)
 {
 	kumatyangWk[IdxIdxKumatyang].rot = rot;
+}
+
+void SetThrowedKumatyang(int Idx)
+{
+	kumatyangWk[Idx].throwed = true;
+	kumatyangWk[Idx].pickup = false;
 }
