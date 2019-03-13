@@ -15,10 +15,7 @@
 #include "YakiYaki.h"
 #include "Meshfield.h"
 #include "Effect.h"
-<<<<<<< HEAD
-=======
 #include "Meshwall.h"
->>>>>>> Develop
 
 //*****************************************************************************
 // ƒOƒ[ƒoƒ‹•Ï”
@@ -84,10 +81,7 @@ void UpdateGame(void)
 	UpdateYakiYaki();
 	UpdateMeshField();
 	UpdateEffect();
-<<<<<<< HEAD
-=======
 	UpdateMeshWall();
->>>>>>> Develop
 
 }
 
