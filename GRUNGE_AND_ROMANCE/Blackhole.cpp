@@ -8,7 +8,12 @@
 #include "Blackhole.h"
 #include "Player.h"
 #include "Game.h"
+<<<<<<< HEAD
+#include "Effect.h"
+#include "Sound.h"
+=======
 #include "Collision.h"
+>>>>>>> Develop
 
 //*****************************************************************************
 // マクロ定義
@@ -108,6 +113,9 @@ void UninitBlackhole(void)
 //=============================================================================
 void UpdateBlackhole(void)
 {
+	int Check = 0;
+	static bool Flag = false;
+
 	CHARA *charaWk = GetPlayer(0);
 
 	for (int en = 0; en < BLACKHOLE_NUM; en++)
@@ -118,6 +126,10 @@ void UpdateBlackhole(void)
 			// 使用している場合のみ更新
 			if (blackholeWk[en].use)
 			{
+<<<<<<< HEAD
+				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
+				blackholeWk[en].use = false;
+=======
 				// エネミーの攻撃
 				EnemyAttack(charaWk->pos, &blackholeWk[en], BLACKHOLE_XSCALE);
 
@@ -144,9 +156,23 @@ void UpdateBlackhole(void)
 						}
 					}
 				}
+>>>>>>> Develop
 			}
 
 		}
+		else if ((!Flag) && (!blackholeWk[en].use))
+		{
+			Check++;
+			Flag = true;
+		}
+	}
+
+	if (Check >= BLACKHOLE_NUM)
+	{
+		UninitGame();
+		Set_Game_Index(GAME_TYPE_STAGE_NEXT);
+		InitGame();
+		Update_Effect_Stage_Switch();
 	}
 }
 

@@ -15,10 +15,14 @@
 #include "Blackhole.h"
 #include "Debugproc.h"
 #include "Game.h"
+<<<<<<< HEAD
+#include "Sound.h"
+=======
 #include "Effect.h"
 #include "Babel.h"
 #include "Kumatyang.h"
 #include "YakiYaki.h"
+>>>>>>> Develop
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -877,6 +881,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Jab].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		SetEffect(playerWk[pn].Collision[LeftHand].pos, HitEffect);
 		break;
@@ -884,6 +889,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Straight].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		SetEffect(playerWk[pn].Collision[RightHand].pos, HitEffect);
 		break;
@@ -891,6 +897,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Upper].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
 		SetEffect(playerWk[pn].Collision[LeftHand].pos, HitEffect);
 		break;
@@ -898,15 +905,33 @@ void HitAction(int pn, ENEMY *enemy)
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Kick].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_KICK, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+<<<<<<< HEAD
+		break;
+	case Pickup:
+		Play_Sound(SOUND_TYPE_ITEM_PICK, SOUND_PLAY_TYPE_PLAY);
+=======
 		SetEffect(playerWk[pn].Collision[RightFoot].pos, HitEffect);
+>>>>>>> Develop
 		break;
 	case Attackitem:
 		// ダメージ
 		AddDamageEnemy(enemy, Data[Attackitem].Damage);
 		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_ITEM, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+<<<<<<< HEAD
+		break;
+	case Throwitem:
+		// ダメージ
+		AddDamageEnemy(enemy, Data[Throwitem].Damage);
+		// SE
+		Play_Sound(SOUND_TYPE_ATTACK_ITEM, SOUND_PLAY_TYPE_PLAY);
+		// エフェクト
+=======
 		SetEffect(playerWk[pn].Collision[RightFoot].pos, HitEffect);
+>>>>>>> Develop
 		break;
 	default:
 		break;

@@ -10,6 +10,14 @@
 #include "Main.h"
 #include "Struct.h"
 
+enum GAME_TYPE
+{
+	GAME_TYPE_STAGE_ONNA,
+	GAME_TYPE_STAGE_BLACK_HOLE,
+	GAME_TYPE_STAGE_NEXT,
+	GAME_TYPE_MAX,
+};
+
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -30,6 +38,9 @@ void DrawGame(void);
 
 void AddDamageEnemy(ENEMY *enemy, int damage);		// エネミーにダメージを与える
 void AddDamagePlayer(CHARA *player, int damage);	// プレイヤーにダメージを与える
+
+void Set_Game_Index(int Set_Index);
+int Get_Game_Index(void);
 
 // エネミーの攻撃													
 void EnemyAttack(D3DXVECTOR3 PlayerPos, ENEMY *Enemy, float scl);		// 攻撃する方向の判定＆攻撃のとりまとめ

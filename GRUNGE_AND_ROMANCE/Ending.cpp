@@ -1,132 +1,234 @@
-/*******************************************************************************
-* タイトル:		エンディングプログラム
-* プログラム名:	Ending.cpp
-* 作成者:		GP11B341 01 飯塚春輝
-* 作成日:		2018/07/26
-*******************************************************************************/
-#include "Ending.h"
+//====================================================================================================================================================================================
+// 概要
+// ファイル名：Ending.cpp
+// コーディングフォント：Ricty Diminished( 16サイズ )
+// 作成者：HAL東京 GP-11B-341 07 亀岡竣介
+// 作成日：2018/12/10
+//====================================================================================================================================================================================
+
+//====================================================================================================================================================================================
+// インクルード
+//====================================================================================================================================================================================
+#include "Main.h"
 #include "Input.h"
-
-//*****************************************************************************
+#include "Sound.h"
+#include "Ending.h"
+//====================================================================================================================================================================================
 // グローバル変数
-//*****************************************************************************
-LPDIRECT3DTEXTURE9		pD3DTextureEnding = NULL;				// テクスチャへのポインタ
-ENDING					EndingWk[ENDING_MAX];					// エンディング構造体
-
-//=============================================================================
-// 初期化処理
-//=============================================================================
-HRESULT InitEnding(void)
+//====================================================================================================================================================================================
+ENDING Ending_State[ENDING_MAX];
+//====================================================================================================================================================================================
+// エンディングの初期化
+// 関数名：HRESULT Initialize_Ending
+// 戻り値：HRESULT
+//====================================================================================================================================================================================
+HRESULT Initialize_Ending(void)
 {
+	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-	ENDING *ending = EndingWk;								// エンディングのポインターを初期化
+	D3DXVECTOR2 Temporary = { NULL,NULL };			//	テンポラリー
+	D3DXIMAGE_INFO Texture_Information[ENDING_MAX];	//	テクスチャ情報
+	const char *Texture_File[ENDING_MAX] =			//	テクスチャファイル
+	{
+		TEXTURE_FILE_ENDING,	//	ENDING_TYPE_000
+	};
 
-	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,						// デバイスへのポインタ
-		TEXTURE_ENDING,					// ファイルの名前
-		&pD3DTextureEnding);			// 読み込むメモリー
+	// ゼロクリア
+	for (int i = 0; i < ENDING_MAX; i++)
+	{
+		for (int j = 0; j < NUM_VERTEX; j++)
+		{
+			ZeroMemory(&Ending_State[i].Vertex[j], sizeof(VERTEX_2D));
+		}
+	}
 
-	ending->pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);						// 座標データを初期化
-	ending->rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);						// 座標データを初期化
-	ending->scl = D3DXVECTOR3(0.0f, 0.0f, 0.0f);						// 座標データを初期化
-	ending->col = D3DXVECTOR3(0.0f, 0.0f, 0.0f);						// 座標データを初期化
-	ending->Alpha = 1.0f;
-	ending->use = true;
-	ending->Texture = pD3DTextureEnding;								// テクスチャ情報
-	D3DXVECTOR2 temp = D3DXVECTOR2(ENDING_SIZE_X, ENDING_SIZE_Y);
-	ending->Radius = D3DXVec2Length(&temp);							// エンディングの半径を初期化
-	ending->BaseAngle = atan2f(ENDING_SIZE_Y, ENDING_SIZE_X);		// エンディングの角度を初期化
-	ending->PatternAnim = 0;										// アニメパターン番号を初期化
-	ending->CountAnim = 0;											// アニメカウントを初期化
-																	// 頂点情報の作成
-	MakeVertexEnding();
+	for (int i = 0; i < ENDING_MAX; i++)
+	{
+		// エンディングの頂点を作成
+		Create_Vertex_Ending(i);
 
+		// テクスチャ情報の取得
+		D3DXGetImageInfoFromFile(Texture_File[i], &Texture_Information[i]);
+
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFileEx
+		(
+			pDevice,
+			Texture_File[i],
+			Texture_Information[i].Width,
+			Texture_Information[i].Height,
+			Texture_Information[i].MipLevels,
+			0,
+			Texture_Information[i].Format,
+			D3DPOOL_MANAGED,
+			D3DX_DEFAULT,
+			D3DX_DEFAULT,
+			0,
+			&Texture_Information[i],
+			NULL,
+			&Ending_State[i].Texture
+		);
+
+		// エンディングの初期化
+		switch (i)
+		{
+		case ENDING_TYPE_000:
+			Temporary = D3DXVECTOR2(ENDING_TEXTURE_SIZE_X_000 / 2, ENDING_TEXTURE_SIZE_Y_000 / 2);
+			Ending_State[i].Position = D3DXVECTOR3(SCREEN_WIDTH - (ENDING_TEXTURE_SIZE_X_000 / 2), SCREEN_HEIGHT / 2, 0.0f);
+			Ending_State[i].Rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			Ending_State[i].Radius = D3DXVec2Length(&Temporary);
+			Ending_State[i].Angle = atan2f(ENDING_TEXTURE_SIZE_Y_000, ENDING_TEXTURE_SIZE_X_000);
+			continue;
+			break;
+		default:
+			continue;
+			break;
+		}
+	}
+
+	// 正常終了
 	return S_OK;
 }
-//=============================================================================
-// 終了処理
-//=============================================================================
-void UninitEnding(void)
+
+//====================================================================================================================================================================================
+// エンディングの解放
+// 関数名：void Release_Ending
+// 戻り値：void
+//====================================================================================================================================================================================
+void Release_Ending(void)
 {
-	if (pD3DTextureEnding != NULL)
-	{// テクスチャの開放
-		pD3DTextureEnding->Release();
-		pD3DTextureEnding = NULL;
+	for (int i = 0; i < ENDING_MAX; i++)
+	{
+		SAFE_RELEASE(Ending_State[i].Texture);
 	}
 
+	return;
 }
-//=============================================================================
-// 更新処理
-//=============================================================================
-void UpdateEnding(void)
+
+//====================================================================================================================================================================================
+// エンディングの更新
+// 関数名：void Update_Ending
+// 戻り値：void
+//====================================================================================================================================================================================
+void Update_Ending(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN))
-	{// Enter押したら、ステージを切り替える
-		SetStage(STAGE_OPENING);
+	// エンディングの頂点情報を設定
+	for (int i = 0; i < ENDING_MAX; i++)
+	{
+		Set_Vertex_Ending(i);
 	}
 
+	return;
 }
-//=============================================================================
-// 描画処理
-//=============================================================================
-void DrawEnding(void)
+
+//====================================================================================================================================================================================
+// エンディング( 押下待ち )の描画
+// 関数名：void Draw_Ending
+// 戻り値：void
+//====================================================================================================================================================================================
+void Draw_Ending(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-	ENDING *ending = EndingWk;				// エンディングのポインターを初期化
 
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
+	for (int i = 0; i < ENDING_MAX; i++)
+	{
+		// テクスチャの設定
+		pDevice->SetTexture(0, Ending_State[i].Texture);
 
-	// テクスチャの設定
-	pDevice->SetTexture(0, ending->Texture);
+		// ポリゴンの描画
+		pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_POLYGON, Ending_State[i].Vertex, sizeof(VERTEX_2D));
+	}
 
-	// ポリゴンの描画
-	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, NUM_ENDING, ending->VertexWkEnding, sizeof(VERTEX_2D));
-
-	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_2D);
-
+	return;
 }
 
-//=============================================================================
-// 頂点の作成
-//=============================================================================
-HRESULT MakeVertexEnding(void)
+//====================================================================================================================================================================================
+// エンディングの頂点を作成
+// 関数名：HRESULT Create_Vertex_Ending
+// 戻り値：HRESULT
+// 引数 1：int
+//====================================================================================================================================================================================
+HRESULT Create_Vertex_Ending(int Ending_Index)
 {
-	ENDING *ending = EndingWk;				// エンディングのポインターを初期化
-
 	// 頂点座標の設定
-	ending->VertexWkEnding[0].vtx = D3DXVECTOR3(ending->pos.x, ending->pos.y, 0.0f);
-	ending->VertexWkEnding[1].vtx = D3DXVECTOR3(ending->pos.x + ENDING_SIZE_X, ending->pos.y, 0.0f);
-	ending->VertexWkEnding[2].vtx = D3DXVECTOR3(ending->pos.x, ending->pos.y + ENDING_SIZE_Y, 0.0f);
-	ending->VertexWkEnding[3].vtx = D3DXVECTOR3(ending->pos.x + ENDING_SIZE_X, ending->pos.y + ENDING_SIZE_Y, 0.0f);
+	Set_Vertex_Ending(Ending_Index);
 
-	// テクスチャのパースペクティブコレクト用
-	ending->VertexWkEnding[0].rhw =
-	ending->VertexWkEnding[1].rhw =
-	ending->VertexWkEnding[2].rhw =
-	ending->VertexWkEnding[3].rhw = 1.0f;
+	// RHWの設定
+	Ending_State[Ending_Index].Vertex[0].rhw = 1.0f;
+	Ending_State[Ending_Index].Vertex[1].rhw = 1.0f;
+	Ending_State[Ending_Index].Vertex[2].rhw = 1.0f;
+	Ending_State[Ending_Index].Vertex[3].rhw = 1.0f;
 
-	// 反射光の設定
-	ending->VertexWkEnding[0].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
-	ending->VertexWkEnding[1].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
-	ending->VertexWkEnding[2].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
-	ending->VertexWkEnding[3].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
+	// 反射光の設定( 頂点カラー )
+	Ending_State[Ending_Index].Vertex[0].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
+	Ending_State[Ending_Index].Vertex[1].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
+	Ending_State[Ending_Index].Vertex[2].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
+	Ending_State[Ending_Index].Vertex[3].diffuse = D3DCOLOR_RGBA(255, 255, 255, 255);
 
 	// テクスチャ座標の設定
-	ending->VertexWkEnding[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	ending->VertexWkEnding[1].tex = D3DXVECTOR2(1.0f / TEXTURE_PATTERN_DIVIDE_X_ENDING, 0.0f);
-	ending->VertexWkEnding[2].tex = D3DXVECTOR2(0.0f, 1.0f / TEXTURE_PATTERN_DIVIDE_Y_ENDING);
-	ending->VertexWkEnding[3].tex = D3DXVECTOR2(1.0f / TEXTURE_PATTERN_DIVIDE_X_ENDING, 1.0f / TEXTURE_PATTERN_DIVIDE_Y_ENDING);
+	Set_Texture_Ending(Ending_Index);
 
+	// 正常終了
 	return S_OK;
 }
 
-//=============================================================================
-// エンディング取得関数
-//=============================================================================
-ENDING *GetEnding(int no)
+//====================================================================================================================================================================================
+// エンディングの頂点座標を設定
+// 関数名：void Set_Vertex_Ending
+// 戻り値：void
+// 引数 1：int
+//====================================================================================================================================================================================
+void Set_Vertex_Ending(int Ending_Index)
+{	
+	// --------------------------------------------------	Vertex[0]	--------------------------------------------------
+	Ending_State[Ending_Index].Vertex[0].vtx.x = (Ending_State[Ending_Index].Position.x - cosf(Ending_State[Ending_Index].Angle + Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+	Ending_State[Ending_Index].Vertex[0].vtx.y = (Ending_State[Ending_Index].Position.y - sinf(Ending_State[Ending_Index].Angle + Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+	// --------------------------------------------------	Vertex[1]	--------------------------------------------------
+	Ending_State[Ending_Index].Vertex[1].vtx.x = (Ending_State[Ending_Index].Position.x + cosf(Ending_State[Ending_Index].Angle - Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+	Ending_State[Ending_Index].Vertex[1].vtx.y = (Ending_State[Ending_Index].Position.y - sinf(Ending_State[Ending_Index].Angle - Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+	// --------------------------------------------------	Vertex[2]	--------------------------------------------------
+	Ending_State[Ending_Index].Vertex[2].vtx.x = (Ending_State[Ending_Index].Position.x - cosf(Ending_State[Ending_Index].Angle - Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+	Ending_State[Ending_Index].Vertex[2].vtx.y = (Ending_State[Ending_Index].Position.y + sinf(Ending_State[Ending_Index].Angle - Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+	// --------------------------------------------------	Vertex[3]	--------------------------------------------------
+	Ending_State[Ending_Index].Vertex[3].vtx.x = (Ending_State[Ending_Index].Position.x + cosf(Ending_State[Ending_Index].Angle + Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+	Ending_State[Ending_Index].Vertex[3].vtx.y = (Ending_State[Ending_Index].Position.y + sinf(Ending_State[Ending_Index].Angle + Ending_State[Ending_Index].Rotation.z) * Ending_State[Ending_Index].Radius) - 0.5f;
+
+	return;
+}
+
+//====================================================================================================================================================================================
+// エンディングのテクスチャ座標を設定
+// 関数名：void Set_Texture_Ending
+// 戻り値：void
+// 引数 1：int
+//====================================================================================================================================================================================
+void Set_Texture_Ending(int Ending_Index)
 {
-	return(&EndingWk[no]);
+	// 変数宣言：初期化
+	int Texture_Split_U = 0 % ENDING_TEXTURE_PATTERN_DIVIDE_X;	//	テクスチャ分割数( U )
+	int Texture_Split_V = 0 / ENDING_TEXTURE_PATTERN_DIVIDE_X;	//	テクスチャ分割数( V )
+	float Size_U = 1.0f / ENDING_TEXTURE_PATTERN_DIVIDE_X;		//	テクスチャの１分割の横幅( X )
+	float Size_V = 1.0f / ENDING_TEXTURE_PATTERN_DIVIDE_Y;		//	テクスチャの１分割の縦幅( Y )
+
+	// テクスチャ座標の設定
+	Ending_State[Ending_Index].Vertex[0].tex = D3DXVECTOR2((float)(Texture_Split_U)* Size_U, (float)(Texture_Split_V)* Size_V);					//	テクスチャ座標の左上を設定
+	Ending_State[Ending_Index].Vertex[1].tex = D3DXVECTOR2((float)(Texture_Split_U)* Size_U + Size_U, (float)(Texture_Split_V)* Size_V);			//	テクスチャ座標の右上を設定
+	Ending_State[Ending_Index].Vertex[2].tex = D3DXVECTOR2((float)(Texture_Split_U)* Size_U, (float)(Texture_Split_V)* Size_V + Size_V);			//	テクスチャ座標の左下を設定
+	Ending_State[Ending_Index].Vertex[3].tex = D3DXVECTOR2((float)(Texture_Split_U)* Size_U + Size_U, (float)(Texture_Split_V)* Size_V + Size_V);	//	テクスチャ座標の右下を設定
+
+	return;
+}
+
+//====================================================================================================================================================================================
+// エンディングの取得
+// 関数名：ENDING *Get_Ending
+// 戻り値：ENDING
+// 引数 1：int
+//====================================================================================================================================================================================
+ENDING *Get_Ending(int Ending_Index)
+{
+	return &Ending_State[Ending_Index];
 }

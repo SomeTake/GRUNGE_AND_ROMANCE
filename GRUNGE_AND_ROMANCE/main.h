@@ -19,6 +19,7 @@
 #include <string>
 #include <tchar.h>
 #include <stdio.h>
+#include <dsound.h>
 
 // Effekseer
 #include <Effekseer.h>
@@ -37,6 +38,7 @@
 #pragma comment (lib, "dxguid.lib")
 #pragma comment (lib, "dinput8.lib")
 #pragma comment (lib, "winmm.lib")
+#pragma comment (lib, "dsound.lib" )
 #endif
 
 #if _DEBUG
