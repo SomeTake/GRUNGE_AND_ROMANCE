@@ -1,11 +1,11 @@
 //=============================================================================
 //
-// ブラックホールくん処理 [Blackhole.h]
+// ボス処理 [Boss.h]
 // Author : HAL東京 GP11B341-17 80277 染谷武志
 //
 //=============================================================================
-#ifndef _BLACKHOLE_H_
-#define _BLACKHOLE_H_
+#ifndef _BOSS_H_
+#define _BOSS_H_
 
 #include "main.h"
 
@@ -13,13 +13,13 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	BLACKHOLE_XFILE		"data/MODEL/black.x"		// 読み込むモデル名
-#define BLACKHOLE_NUM			(10)						// エネミーの数
-#define BLACKHOLE_HP_MAX		(10)
-#define BLACKHOLE_DIRECTION		(0.0f)
-#define BLACKHOLE_DIRECTION2	(160.0f)					// エネミーを反対向きに
-#define BLACKHOLE_SCALE			(3.0f)
-#define BLACKHOLE_XSCALE		(12.0f)
+#define	BOSS_XFILE		"data/MODEL/sora_ai.x"		// 読み込むモデル名
+#define BOSS_NUM		(1)						// エネミーの数
+#define BOSS_HP_MAX		(200)
+#define BOSS_DIRECTION	(200.0f)
+#define BOSS_DIRECTION2	(360.0f)				// エネミーを反対向きに
+#define BOSS_SCALE		(10.0f)
+#define BOSS_XSCALE		(10.0f)
 
 //*****************************************************************************
 // グローバル変数
@@ -28,11 +28,11 @@
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitBlackhole(int type);
-void UninitBlackhole(void);
-void UpdateBlackhole(void);
-void DrawBlackhole(void);
-ENEMY *GetBlackhole(int en);
-void SetVertexBlackhole(void);
+HRESULT InitBoss(int type);
+void UninitBoss(void);
+void UpdateBoss(void);
+void DrawBoss(void);
+ENEMY *GetBoss(int en);
+void SetVertexBoss(void);
 
 #endif

@@ -22,7 +22,7 @@
 #define PLAYER_HP_MAX	(200)
 
 #define VALUE_FRONTWALK	(3.00f)								// ‘O•à‚«ˆÚ“®—Ê
-#define	VALUE_SIDESTEP	(1.00f)								// ‰¡•à‚«ˆÚ“®—Ê
+#define	VALUE_SIDESTEP	(2.00f)								// ‰¡•à‚«ˆÚ“®—Ê
 #define VALUE_HALF		(0.5f)								// ‰½‚ç‚©‚Ì’l‚ð”¼•ª‚É‚·‚é‚½‚ß‚ÉŠ|‚¯‚é
 
 //*****************************************************************************

@@ -132,6 +132,7 @@
     <ClInclude Include="AnimationModel.h" />
     <ClInclude Include="Babel.h" />
     <ClInclude Include="Blackhole.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="CAllocateHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Onna.h" />
     <ClInclude Include="Opening.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="shadow.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Struct.h" />
     <ClInclude Include="Title.h" />
@@ -159,6 +161,7 @@
     <ClCompile Include="AnimationModel.cpp" />
     <ClCompile Include="Babel.cpp" />
     <ClCompile Include="Blackhole.cpp" />
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="CAllocateHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
@@ -177,6 +180,7 @@
     <ClCompile Include="Onna.cpp" />
     <ClCompile Include="Opening.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="shadow.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="YakiYaki.cpp" />

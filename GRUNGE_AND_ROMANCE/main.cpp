@@ -18,6 +18,18 @@
 #include "Effect.h"
 #include "Blackhole.h"
 #include "Sound.h"
+#include "Player.h"
+#include "Onna.h"
+#include "Gauge.h"
+#include "meshfield.h"
+#include "Blackhole.h"
+#include "Babel.h"
+#include "Kumatyang.h"
+#include "YakiYaki.h"
+#include "Meshfield.h"
+#include "Meshwall.h"
+#include "Boss.h"
+#include "shadow.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -328,8 +340,25 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	InitLight();
 	InitOpening();
 	Initialize_Title();
-	InitGame();
 	Initialize_Ending();
+	InitShadow(0);
+	InitPlayer(0);
+	InitOnna(0);
+	InitGauge(0);
+	InitBabel(0);
+	InitKumatyang(0);
+	InitYakiYaki(0);
+	InitEffect(true);
+	InitBoss(0);
+	InitMeshField(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 16, 16, 80.0f, 80.0f);
+	InitMeshWall(D3DXVECTOR3(0.0f, 0.0f, 640.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
+	InitMeshWall(D3DXVECTOR3(-640.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI * 0.50f, 0.0f),
+		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
+	InitMeshWall(D3DXVECTOR3(640.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.50f, 0.0f),
+		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
+	InitMeshWall(D3DXVECTOR3(0.0f, 0.0f, -640.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f),
+		D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	return S_OK;
 }
@@ -377,6 +406,7 @@ void Uninit(void)
 	// エンディングの終了処理
 	Release_Ending();
 
+	UninitShadow();
 
 }
 
@@ -409,7 +439,7 @@ void Update(void)
 		// タイトル更新
 		Update_Title();
 
-		if (GetKeyboardTrigger(DIK_RETURN))
+		if (GetKeyboardTrigger(DIK_RETURN) || IsButtonTriggered(0, BUTTON_C) || IsButtonTriggered(1, BUTTON_C))
 		{// Enter押したら、ステージを切り替える
 			Stop_Sound(SOUND_TYPE_TITLE);
 			Play_Sound(SOUND_TYPE_BGM, SOUND_PLAY_TYPE_LOOP);
@@ -426,7 +456,7 @@ void Update(void)
 
 		// エフェクト更新
 		UpdateEffect();
-
+		UpdateShadow();
 		break;
 
 	case STAGE_ENDING:
@@ -434,9 +464,10 @@ void Update(void)
 		// エンディング更新
 		Update_Ending();
 
-		if (GetKeyboardTrigger(DIK_RETURN))
+		if (GetKeyboardTrigger(DIK_RETURN) || IsButtonTriggered(0, BUTTON_C) || IsButtonTriggered(1, BUTTON_C))
 		{// Enter押したら、ステージを切り替える
-			PostQuitMessage(0);
+			SetStage(STAGE_TITLE);
+			ReInit();
 		}
 
 		break;
@@ -482,10 +513,10 @@ void Draw(void)
 
 			// ゲーム描画
 			DrawGame();
-
+			
 			//エフェクト描画
 			DrawEffect();
-
+			DrawShadow();
 			break;
 
 		case STAGE_ENDING:
@@ -512,6 +543,13 @@ void ReInit(void)
 	InitPlayer(1);
 	InitOnna(1);
 	InitBlackhole(1);
+	InitGauge(1);
+	InitBabel(1);
+	InitKumatyang(1);
+	InitYakiYaki(1);
+	InitEffect(false);
+	InitShadow(1);
+	InitBoss(1);
 }
 
 //=============================================================================

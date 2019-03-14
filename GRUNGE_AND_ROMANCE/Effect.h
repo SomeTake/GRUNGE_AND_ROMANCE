@@ -14,6 +14,9 @@ enum EffectType
 {
 	HitEffect,
 	FireEffect,
+	BurstEffect,
+	AuraEffect,
+	PowerupEffect
 };
 
 

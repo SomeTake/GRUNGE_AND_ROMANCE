@@ -55,6 +55,7 @@ typedef struct {
 	COLLISION			Collision[HIT_CHECK_NUM];			// 当たり判定用構造体
 	int					ItemIdx;			// 使用しているアイテム番号
 	int					ItemCategory;		// 使用しているアイテムの種類
+	int					IdxShadow;
 }CHARA;
 
 // エネミーキャラクター用
@@ -74,6 +75,7 @@ typedef struct {
 	bool				IdleFlag;			// 敵移動フラグ
 	bool				AttackFlag;			// 敵X値フラグ
 	bool				Direction;			// 向き判定
+	int					IdxShadow;
 }ENEMY;
 
 // アイテム用

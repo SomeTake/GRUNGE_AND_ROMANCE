@@ -20,6 +20,9 @@
 #include "Babel.h"
 #include "Kumatyang.h"
 #include "YakiYaki.h"
+#include "Boss.h"
+#include "shadow.h"
+#include "Game.h"
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -182,6 +185,11 @@ HRESULT InitPlayer(int type)
 				InitCollision(0, &playerWk[pn].Collision[i], Mtx, HitRadius[i]);
 			}
 		}
+		//for (int pn = 0; pn < PLAYER_NUM; pn++)
+		//{
+		//	playerWk[pn].IdxShadow = SetShadow(playerWk[pn].pos, 10.0f, 10.0f);
+		//}
+
 	}
 	else
 	{
@@ -220,11 +228,14 @@ void UpdatePlayer(void)
 	// エネミー構造体のポインタを取得
 	ENEMY *OnnaWk = GetOnna(0);
 	ENEMY *BlackholeWk = GetBlackhole(0);
+	ENEMY *BossWk = GetBoss(0);
 
 	// アイテム構造体のポインタを取得
 	ITEM *BabelWk = GetBabel(0);
 	ITEM *KumaWk = GetKumatyang(0);
 	ITEM *YakiWk = GetYakiYaki(0);
+
+	int phase = Get_Game_Index();
 
 	for (int pn = 0; pn < PLAYER_NUM; pn++)
 	{
@@ -286,6 +297,23 @@ void UpdatePlayer(void)
 				}
 			}
 
+			if (phase == GAME_TYPE_STAGE_NEXT)
+			{
+				// ボスとの当たり判定
+				for (int num = 0; num < BOSS_NUM; num++)
+				{
+					if (BossWk[num].use == true)
+					{
+						if (HitCheckPToE(&playerWk[pn], &BossWk[num]) == true)
+						{
+							// 当たったあとの動き
+							playerWk[num].HitFrag = true;
+							HitAction(pn, &BossWk[num]);
+						}
+					}
+				}
+			}
+
 			// アイテムとの当たり判定
 			// バーベル
 			for (int num = 0; num < BABEL_NUM; num++)
@@ -298,6 +326,7 @@ void UpdatePlayer(void)
 						playerWk[pn].UseItem = true;
 						playerWk[pn].ItemIdx = SetBabel(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
 						playerWk[pn].ItemCategory = ItemBabel;
+						SetEffect(playerWk[pn].pos, PowerupEffect);
 					}
 				}
 			}
@@ -313,6 +342,7 @@ void UpdatePlayer(void)
 						playerWk[pn].UseItem = true;
 						playerWk[pn].ItemIdx = SetKumatyang(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
 						playerWk[pn].ItemCategory = ItemKumatyang;
+						SetEffect(playerWk[pn].pos, PowerupEffect);
 					}
 				}
 			}
@@ -328,6 +358,7 @@ void UpdatePlayer(void)
 						playerWk[pn].UseItem = true;
 						playerWk[pn].ItemIdx = SetYakiYaki(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
 						playerWk[pn].ItemCategory = ItemYakiYaki;
+						SetEffect(playerWk[pn].pos, PowerupEffect);
 					}
 				}
 			}
@@ -338,6 +369,8 @@ void UpdatePlayer(void)
 		// アイテムを所有している場合位置を右手の座標に合わせる
 		if (playerWk[pn].UseItem)
 		{
+			SetEffect(playerWk[pn].pos, AuraEffect);
+
 			switch (playerWk[pn].ItemCategory)
 			{
 			case ItemBabel:
@@ -354,6 +387,10 @@ void UpdatePlayer(void)
 				break;
 			}
 		}
+
+		SetPositionShadow(playerWk[pn].IdxShadow, playerWk[pn].pos);
+		SetVertexShadow(playerWk[pn].IdxShadow, 10.0f, 10.0f);
+		SetColorShadow(playerWk[pn].IdxShadow, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 
 	// 両方死亡でゲームオーバー
@@ -904,6 +941,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_KICK, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[RightFoot].pos, HitEffect);
 		break;
 	case Pickup:
 		Play_Sound(SOUND_TYPE_ITEM_PICK, SOUND_PLAY_TYPE_PLAY);
@@ -915,6 +953,8 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_ITEM, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[RightHand].pos, HitEffect);
+
 		break;
 	case Throwitem:
 		// ダメージ

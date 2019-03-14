@@ -12,6 +12,7 @@
 #include "Effect.h"
 #include "Sound.h"
 #include "Collision.h"
+#include "shadow.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -38,7 +39,7 @@ HRESULT InitOnna(int type)
 		// 位置・回転・スケールの初期設定
 		onnaWk[en].HP = ONNA_HP_MAX;
 		onnaWk[en].HPzan = onnaWk[en].HP;
-		onnaWk[en].pos = D3DXVECTOR3(-100.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
+		onnaWk[en].pos = D3DXVECTOR3(CreateRandomFloat (-200.0f, 200.0f), 0.0f, CreateRandomFloat(-200.0f, 10.0f));
 		onnaWk[en].Epos = D3DXVECTOR3(0.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
 		onnaWk[en].rot = D3DXVECTOR3(0.0f, ONNA_DIRECTION, 0.0f);
 		onnaWk[en].scl = D3DXVECTOR3(ONNA_SCALE, ONNA_SCALE, ONNA_SCALE);
@@ -65,6 +66,8 @@ HRESULT InitOnna(int type)
 			{
 				return E_FAIL;
 			}
+
+			onnaWk[en].IdxShadow = SetShadow(onnaWk[en].pos, 10.0f, 10.0f);
 
 #if 0
 			// テクスチャの読み込み
@@ -111,21 +114,19 @@ void UninitOnna(void)
 //=============================================================================
 void UpdateOnna(void)
 {
-	int Check = 0;
-	static bool Flag = false;
+	static int Check = 0;
 
 	CHARA *charaWk = GetPlayer(0);
 
-	for (int en = 0; en < ONNA_NUM; en++)
+	for (int pn = 0; pn < PLAYER_NUM; pn++, charaWk++)
 	{
-		for (int pn = 0; pn < PLAYER_NUM; pn++, charaWk++)
+
+		for (int en = 0; en < ONNA_NUM; en++)
 		{
 
 			// 使用している場合のみ更新
 			if (onnaWk[en].use)
 			{
-				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
-				onnaWk[en].use = false;
 				// エネミーの攻撃
 				EnemyAttack(charaWk->pos, &onnaWk[en], ONNA_XSCALE);
 
@@ -134,7 +135,11 @@ void UpdateOnna(void)
 				// HP0になったら消滅
 				if (onnaWk[en].HPzan == 0)
 				{
+					DeleteShadow(onnaWk[en].IdxShadow);
+					SetEffect(onnaWk[en].pos, BurstEffect);
+					Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
 					onnaWk[en].use = false;
+					Check++;
 				}
 
 				// 攻撃中の当たり判定
@@ -152,11 +157,10 @@ void UpdateOnna(void)
 						}
 					}
 				}
-			}
-			else if ((!Flag) && (!onnaWk[en].use))
-			{
-				Check++;
-				Flag = true;
+			
+				SetPositionShadow(onnaWk[en].IdxShadow, onnaWk[en].pos);
+				SetVertexShadow(onnaWk[en].IdxShadow, 10.0f, 10.0f);
+				SetColorShadow(onnaWk[en].IdxShadow, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 			}
 
 		}

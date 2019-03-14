@@ -18,6 +18,7 @@
 #include "Meshwall.h"
 #include "Input.h"
 #include "Sound.h"
+#include "Boss.h"
 
 //*****************************************************************************
 // グローバル変数
@@ -29,18 +30,17 @@ int Game_Index = GAME_TYPE_STAGE_ONNA;
 //=============================================================================
 HRESULT InitGame(void)
 {
-	InitEffect(true);
 
 	switch (Game_Index)
 	{
 	case GAME_TYPE_STAGE_ONNA:
 		InitMeshField(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 16, 16, 80.0f, 80.0f);
-		InitPlayer(0);
-		InitOnna(0);
-		InitGauge(0);
-		InitBabel(0);
-		InitKumatyang(0);
-		InitYakiYaki(0);
+		InitPlayer(1);
+		InitOnna(1);
+		InitGauge(1);
+		InitBabel(1);
+		InitKumatyang(1);
+		InitYakiYaki(1);
 		break;
 	case GAME_TYPE_STAGE_BLACK_HOLE:
 		InitMeshField(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 16, 16, 80.0f, 80.0f);
@@ -52,15 +52,6 @@ HRESULT InitGame(void)
 	default:
 		break;
 	}
-
-	InitMeshWall(D3DXVECTOR3(0.0f, 0.0f, 640.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
-	InitMeshWall(D3DXVECTOR3(-640.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI * 0.50f, 0.0f),
-		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
-	InitMeshWall(D3DXVECTOR3(640.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.50f, 0.0f),
-		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
-	InitMeshWall(D3DXVECTOR3(0.0f, 0.0f, -640.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f),
-		D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 
 	return S_OK;
 }
@@ -88,6 +79,7 @@ void UninitGame(void)
 		UninitKumatyang();
 		UninitYakiYaki();
 		UninitEffect();
+		UninitBoss();
 		break;
 	default:
 		break;
@@ -133,13 +125,15 @@ void UpdateGame(void)
 		UpdateKumatyang();
 		UpdateYakiYaki();
 		UpdateEffect();
+		UpdateBoss();
 
-		if (GetKeyboardTrigger(DIK_RETURN))
-		{// Enter押したら、ステージを切り替える
-			Stop_Sound(SOUND_TYPE_BGM);
-			Play_Sound(SOUND_TYPE_ENDING, SOUND_PLAY_TYPE_LOOP);
-			SetStage(STAGE_ENDING);
-		}
+		//if (GetKeyboardTrigger(DIK_RETURN) || IsButtonTriggered(0, BUTTON_C) || IsButtonTriggered(1, BUTTON_C))
+		//{// Enter押したら、ステージを切り替える
+		//	Stop_Sound(SOUND_TYPE_BGM);
+		//	Play_Sound(SOUND_TYPE_ENDING, SOUND_PLAY_TYPE_LOOP);
+		//	SetStage(STAGE_ENDING);
+		//	ReInit();
+		//}
 
 		break;
 	default:
@@ -186,6 +180,7 @@ void DrawGame(void)
 		DrawKumatyang();
 		DrawYakiYaki();
 		DrawEffect();
+		DrawBoss();
 		break;
 	default:
 		break;

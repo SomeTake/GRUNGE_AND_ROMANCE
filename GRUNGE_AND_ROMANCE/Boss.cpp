@@ -1,17 +1,19 @@
 //=============================================================================
 //
-// ブラックホールくん処理 [Blackhole.cpp]
+// ボス処理 [Boss.cpp]
 // Author : HAL東京 GP11B341-17 80277 染谷武志
 //
 //=============================================================================
 #include "Struct.h"
-#include "Blackhole.h"
+#include "Boss.h"
 #include "Player.h"
+#include "Debugproc.h"
 #include "Game.h"
 #include "Effect.h"
 #include "Sound.h"
 #include "Collision.h"
 #include "shadow.h"
+
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -23,55 +25,54 @@
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-ENEMY blackholeWk[BLACKHOLE_NUM];	// エネミー構造体
+ENEMY bossWk[BOSS_NUM];	// エネミー構造体
 
-//=============================================================================
-// 初期化処理
-//=============================================================================
-HRESULT InitBlackhole(int type)
+						//=============================================================================
+						// 初期化処理
+						//=============================================================================
+HRESULT InitBoss(int type)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
-	for (int en = 0; en < BLACKHOLE_NUM; en++)
+	for (int en = 0; en < BOSS_NUM; en++)
 	{
 		// 位置・回転・スケールの初期設定
-		blackholeWk[en].HP = BLACKHOLE_HP_MAX;
-		blackholeWk[en].HPzan = blackholeWk[en].HP;
-		blackholeWk[en].pos = D3DXVECTOR3(CreateRandomFloat(200.0f, -200.0f), 0.0f, CreateRandomFloat(-200.0f, 10.0f));
-		blackholeWk[en].Epos = D3DXVECTOR3(0.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
-		blackholeWk[en].rot = D3DXVECTOR3(0.0f, BLACKHOLE_DIRECTION, 0.0f);
-		blackholeWk[en].scl = D3DXVECTOR3(BLACKHOLE_SCALE, BLACKHOLE_SCALE, BLACKHOLE_SCALE);
+		bossWk[en].HP = BOSS_HP_MAX;
+		bossWk[en].HPzan = bossWk[en].HP;
+		bossWk[en].pos = D3DXVECTOR3(CreateRandomFloat(-200.0f, 200.0f), 0.0f, CreateRandomFloat(-200.0f, 10.0f));
+		bossWk[en].Epos = D3DXVECTOR3(0.0f, 0.0f, CreateRandomFloat(-200.0f, 10.0f));
+		bossWk[en].rot = D3DXVECTOR3(0.0f, BOSS_DIRECTION, 0.0f);
+		bossWk[en].scl = D3DXVECTOR3(BOSS_SCALE, BOSS_SCALE, BOSS_SCALE);
 
-		blackholeWk[en].D3DTexture = NULL;
-		blackholeWk[en].D3DXMesh = NULL;
-		blackholeWk[en].D3DXBuffMat = NULL;
-		blackholeWk[en].NumMat = 0;
-		blackholeWk[en].use = true;
-		blackholeWk[en].IdleFlag = true;
-		blackholeWk[en].IdleFlag = false;
+		bossWk[en].D3DTexture = NULL;
+		bossWk[en].D3DXMesh = NULL;
+		bossWk[en].D3DXBuffMat = NULL;
+		bossWk[en].NumMat = 0;
+		bossWk[en].use = true;
+		bossWk[en].IdleFlag = true;
+		bossWk[en].AttackFlag = false;
 
 		if (type == 0)
 		{
 			// Xファイルの読み込み
-			if (FAILED(D3DXLoadMeshFromX(BLACKHOLE_XFILE,		// 読み込むモデルファイル名(Xファイル)
+			if (FAILED(D3DXLoadMeshFromX(BOSS_XFILE,		// 読み込むモデルファイル名(Xファイル)
 				D3DXMESH_SYSTEMMEM,							// メッシュの作成オプションを指定
 				pDevice,									// IDirect3DDevice9インターフェイスへのポインタ
 				NULL,										// 隣接性データを含むバッファへのポインタ
-				&blackholeWk[en].D3DXBuffMat,					// マテリアルデータを含むバッファへのポインタ
+				&bossWk[en].D3DXBuffMat,					// マテリアルデータを含むバッファへのポインタ
 				NULL,										// エフェクトインスタンスの配列を含むバッファへのポインタ
-				&blackholeWk[en].NumMat,						// D3DXMATERIAL構造体の数
-				&blackholeWk[en].D3DXMesh)))					// ID3DXMeshインターフェイスへのポインタのアドレス
+				&bossWk[en].NumMat,						// D3DXMATERIAL構造体の数
+				&bossWk[en].D3DXMesh)))					// ID3DXMeshインターフェイスへのポインタのアドレス
 			{
 				return E_FAIL;
 			}
 
-			blackholeWk[en].IdxShadow = SetShadow(blackholeWk[en].pos, 10.0f, 10.0f);
-
+			bossWk[en].IdxShadow = SetShadow(bossWk[en].pos, 30.0f, 30.0f);
 #if 0
 			// テクスチャの読み込み
 			D3DXCreateTextureFromFile(pDevice,					// デバイスへのポインタ
 				TEXTURE_FILENAME,		// ファイルの名前
-				&blackholeWk[en].D3DTexture);	// 読み込むメモリー
+				&bossWk[en].D3DTexture);	// 読み込むメモリー
 #endif
 		}
 	}
@@ -82,26 +83,26 @@ HRESULT InitBlackhole(int type)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void UninitBlackhole(void)
+void UninitBoss(void)
 {
-	for (int en = 0; en < BLACKHOLE_NUM; en++)
+	for (int en = 0; en < BOSS_NUM; en++)
 	{
-		if (blackholeWk[en].D3DTexture != NULL)
+		if (bossWk[en].D3DTexture != NULL)
 		{	// テクスチャの開放
-			blackholeWk[en].D3DTexture->Release();
-			blackholeWk[en].D3DTexture = NULL;
+			bossWk[en].D3DTexture->Release();
+			bossWk[en].D3DTexture = NULL;
 		}
 
-		if (blackholeWk[en].D3DXMesh != NULL)
+		if (bossWk[en].D3DXMesh != NULL)
 		{	// メッシュの開放
-			blackholeWk[en].D3DXMesh->Release();
-			blackholeWk[en].D3DXMesh = NULL;
+			bossWk[en].D3DXMesh->Release();
+			bossWk[en].D3DXMesh = NULL;
 		}
 
-		if (blackholeWk[en].D3DXBuffMat != NULL)
+		if (bossWk[en].D3DXBuffMat != NULL)
 		{	// マテリアルの開放
-			blackholeWk[en].D3DXBuffMat->Release();
-			blackholeWk[en].D3DXBuffMat = NULL;
+			bossWk[en].D3DXBuffMat->Release();
+			bossWk[en].D3DXBuffMat = NULL;
 		}
 	}
 
@@ -110,7 +111,7 @@ void UninitBlackhole(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void UpdateBlackhole(void)
+void UpdateBoss(void)
 {
 	static int Check = 0;
 
@@ -119,63 +120,64 @@ void UpdateBlackhole(void)
 	for (int pn = 0; pn < PLAYER_NUM; pn++, charaWk++)
 	{
 
-		for (int en = 0; en < BLACKHOLE_NUM; en++)
+		for (int en = 0; en < BOSS_NUM; en++)
 		{
 
 			// 使用している場合のみ更新
-			if (blackholeWk[en].use)
+			if (bossWk[en].use)
 			{
 				// エネミーの攻撃
-				EnemyAttack(charaWk->pos, &blackholeWk[en], BLACKHOLE_XSCALE);
-				SetVertexBlackhole();
+				EnemyAttack(charaWk->pos, &bossWk[en], BOSS_XSCALE);
+
+				SetVertexBoss();
 
 				// HP0になったら消滅
-				if (blackholeWk[en].HPzan == 0)
+				if (bossWk[en].HPzan == 0)
 				{
-					DeleteShadow(blackholeWk[en].IdxShadow);
-					SetEffect(blackholeWk[en].pos, BurstEffect);
+					DeleteShadow(bossWk[en].IdxShadow);
+					SetEffect(bossWk[en].pos, BurstEffect);
 					Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
-					blackholeWk[en].use = false;
+					bossWk[en].use = false;
 					Check++;
 				}
 
 				// 攻撃中の当たり判定
-				if (blackholeWk[en].AttackFlag)
+				if (bossWk[en].AttackFlag)
 				{
 					if (charaWk->Animation->CurrentAnimID == Idle || charaWk->Animation->CurrentAnimID == Walk
 						|| charaWk->Animation->CurrentAnimID == Rightwalk || charaWk->Animation->CurrentAnimID == Leftwalk
 						|| charaWk->Animation->CurrentAnimID == Idleitem)
 					{
-						if (HitCheckEToP(&blackholeWk[en], charaWk))
+						if (HitCheckEToP(&bossWk[en], charaWk))
 						{
-							blackholeWk[en].AttackFlag = false;
+							bossWk[en].AttackFlag = false;
 							charaWk->Animation->ChangeAnimation(charaWk->Animation, Reaction, Data[Reaction].Spd);
 							charaWk->HPzan -= ENEMY_DAMAGE;
 						}
 					}
 				}
 
-				SetPositionShadow(blackholeWk[en].IdxShadow, blackholeWk[en].pos);
-				SetVertexShadow(blackholeWk[en].IdxShadow, 10.0f, 10.0f);
-				SetColorShadow(blackholeWk[en].IdxShadow, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				SetPositionShadow(bossWk[en].IdxShadow, bossWk[en].pos);
+				SetVertexShadow(bossWk[en].IdxShadow, 30.0f, 30.0f);
+				SetColorShadow(bossWk[en].IdxShadow, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
 			}
 
 		}
 	}
 
-	if (Check >= BLACKHOLE_NUM)
+	if (Check >= BOSS_NUM)
 	{
-		UninitGame();
-		Set_Game_Index(GAME_TYPE_STAGE_NEXT);
-		InitGame();
-		SetEffect(D3DXVECTOR3(0.0f,0.0f,0.0f), FireEffect);
+		SetStage(STAGE_ENDING);
+		ReInit();
+		SetEffect(D3DXVECTOR3(0.0f, 0.0f, 0.0f), FireEffect);
 	}
 }
 
 //=============================================================================
 // 描画処理
 //=============================================================================
-void DrawBlackhole(void)
+void DrawBoss(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 	D3DXMATRIX mtxScl, mtxRot, mtxTranslate, g_mtxWorld;
@@ -183,23 +185,23 @@ void DrawBlackhole(void)
 	D3DMATERIAL9 matDef;
 
 
-	for (int en = 0; en < BLACKHOLE_NUM; en++)
+	for (int en = 0; en < BOSS_NUM; en++)
 	{
-		if (blackholeWk[en].use)
+		if (bossWk[en].use)
 		{
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_mtxWorld);
 
 			// スケールを反映
-			D3DXMatrixScaling(&mtxScl, blackholeWk[en].scl.x, blackholeWk[en].scl.y, blackholeWk[en].scl.z);
+			D3DXMatrixScaling(&mtxScl, bossWk[en].scl.x, bossWk[en].scl.y, bossWk[en].scl.z);
 			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxScl);
 
 			// 回転を反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, blackholeWk[en].rot.y, blackholeWk[en].rot.x, blackholeWk[en].rot.z);
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, bossWk[en].rot.y, bossWk[en].rot.x, bossWk[en].rot.z);
 			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxRot);
 
 			// 移動を反映
-			D3DXMatrixTranslation(&mtxTranslate, blackholeWk[en].pos.x, blackholeWk[en].pos.y, blackholeWk[en].pos.z);
+			D3DXMatrixTranslation(&mtxTranslate, bossWk[en].pos.x, bossWk[en].pos.y, bossWk[en].pos.z);
 			D3DXMatrixMultiply(&g_mtxWorld, &g_mtxWorld, &mtxTranslate);
 
 			// ワールドマトリックスの設定
@@ -209,38 +211,39 @@ void DrawBlackhole(void)
 			pDevice->GetMaterial(&matDef);
 
 			// マテリアル情報に対するポインタを取得
-			pD3DXMat = (D3DXMATERIAL*)blackholeWk[en].D3DXBuffMat->GetBufferPointer();
+			pD3DXMat = (D3DXMATERIAL*)bossWk[en].D3DXBuffMat->GetBufferPointer();
 
-			for (int nCntMat = 0; nCntMat < (int)blackholeWk[en].NumMat; nCntMat++)
+			for (int nCntMat = 0; nCntMat < (int)bossWk[en].NumMat; nCntMat++)
 			{
 				// マテリアルの設定
 				pDevice->SetMaterial(&pD3DXMat[nCntMat].MatD3D);
 
 				// テクスチャの設定
-				pDevice->SetTexture(0, blackholeWk[en].D3DTexture);
+				pDevice->SetTexture(0, bossWk[en].D3DTexture);
 
 				// 描画
-				blackholeWk[en].D3DXMesh->DrawSubset(nCntMat);
+				bossWk[en].D3DXMesh->DrawSubset(nCntMat);
 			}
 
 			// マテリアルをデフォルトに戻す
 			pDevice->SetMaterial(&matDef);
 		}
+
 	}
 }
 
 //=============================================================================
 // 頂点座標の設定
 //=============================================================================
-void SetVertexBlackhole(void)
+void SetVertexBoss(void)
 {
-	if (blackholeWk->Direction == false)
+	if (bossWk->Direction == false)
 	{
-		blackholeWk->rot.y = BLACKHOLE_DIRECTION;
+		bossWk->rot.y = BOSS_DIRECTION2;
 	}
-	else if (blackholeWk->Direction == true)
+	else if (bossWk->Direction == true)
 	{
-		blackholeWk->rot.y = BLACKHOLE_DIRECTION2;
+		bossWk->rot.y = BOSS_DIRECTION;
 	}
 
 }
@@ -249,7 +252,7 @@ void SetVertexBlackhole(void)
 // エネミーの情報を取得する
 // 引数：en エネミー番号
 //=============================================================================
-ENEMY *GetBlackhole(int en)
+ENEMY *GetBoss(int en)
 {
-	return &blackholeWk[en];
+	return &bossWk[en];
 }

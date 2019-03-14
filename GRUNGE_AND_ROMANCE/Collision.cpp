@@ -229,8 +229,8 @@ bool HitCheckPToE(CHARA *Player, ENEMY *Enemy)
 		}
 		break;
 	case Attackitem:
-		if (HitSphereToCircle(Player->Collision[RightFoot].pos, Enemy->pos,
-			Player->Collision[RightFoot].scl.x, Enemy->scl.x) == true)
+		if (HitSphereToCircle(Player->Collision[RightHand].pos, Enemy->pos,
+			Player->Collision[RightHand].scl.x, Enemy->scl.x) == true)
 		{
 			return true;
 		}

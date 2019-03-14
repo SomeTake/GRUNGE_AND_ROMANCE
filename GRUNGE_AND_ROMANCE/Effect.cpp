@@ -13,7 +13,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define EFFECT_MAX (1)
+#define EFFECT_MAX (300)
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -29,7 +29,9 @@ static const EFK_CHAR* EffectFileName[] =
 {
 	(const EFK_CHAR*)L"data/EFFECT/blow.efk",
 	(const EFK_CHAR*)L"data/EFFECT/FireCircle.efk",
-
+	(const EFK_CHAR*)L"data/EFFECT/burst.efk",
+	(const EFK_CHAR*)L"data/EFFECT/aura.efk",
+	(const EFK_CHAR*)L"data/EFFECT/powerup.efk",
 };
 
 D3DXVECTOR3 at, up, pos,ppos;
@@ -47,7 +49,7 @@ HRESULT InitEffect(bool FirstInit)
 		Effect[Effect_No].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);;
 		Effect[Effect_No].ID = -1;
 		Effect[Effect_No].EffectType = -1;
-		Effect[Effect_No].use = true;
+		Effect[Effect_No].use = false;
 	}
 
 	// 初めて初期化
@@ -166,15 +168,25 @@ void Update_Effect_Stage_Switch(void)
 
 	for (Effect_No = 0; Effect_No < EFFECT_MAX; Effect_No++)
 	{
-		if (Effect[Effect_No].use == true)
+		// 使用しているもののみ更新
+		if (Effect[FireEffect].use == true)
 		{
-			EffectID = Effect[Effect_No].ID;
+			EffectID = Effect[FireEffect].ID;
+			// 1ループしたら終了
+			if (EffectCtrl.Manager->GetShown(EffectID) == false)
+			{
+				EffectCtrl.Manager->StopEffect(Effect[FireEffect].ID);
+				Effect[FireEffect].use = false;
+				continue;
+			}
 
 		}
 	}
 
+
 	// エフェクトの更新処理を行う
 	EffectCtrl.Manager->Update();
+
 
 	return;
 }
