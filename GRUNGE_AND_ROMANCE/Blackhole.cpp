@@ -8,12 +8,9 @@
 #include "Blackhole.h"
 #include "Player.h"
 #include "Game.h"
-<<<<<<< HEAD
 #include "Effect.h"
 #include "Sound.h"
-=======
 #include "Collision.h"
->>>>>>> Develop
 
 //*****************************************************************************
 // マクロ定義
@@ -126,10 +123,6 @@ void UpdateBlackhole(void)
 			// 使用している場合のみ更新
 			if (blackholeWk[en].use)
 			{
-<<<<<<< HEAD
-				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
-				blackholeWk[en].use = false;
-=======
 				// エネミーの攻撃
 				EnemyAttack(charaWk->pos, &blackholeWk[en], BLACKHOLE_XSCALE);
 
@@ -138,6 +131,7 @@ void UpdateBlackhole(void)
 				// HP0になったら消滅
 				if (blackholeWk[en].HPzan == 0)
 				{
+					Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
 					blackholeWk[en].use = false;
 				}
 
@@ -156,14 +150,13 @@ void UpdateBlackhole(void)
 						}
 					}
 				}
->>>>>>> Develop
+			}
+			else if ((!Flag) && (!blackholeWk[en].use))
+			{
+				Check++;
+				Flag = true;
 			}
 
-		}
-		else if ((!Flag) && (!blackholeWk[en].use))
-		{
-			Check++;
-			Flag = true;
 		}
 	}
 
@@ -172,7 +165,7 @@ void UpdateBlackhole(void)
 		UninitGame();
 		Set_Game_Index(GAME_TYPE_STAGE_NEXT);
 		InitGame();
-		Update_Effect_Stage_Switch();
+		SetEffect(D3DXVECTOR3(0.0f,0.0f,0.0f), FireEffect);
 	}
 }
 

@@ -164,21 +164,12 @@ void Update_Effect_Stage_Switch(void)
 	int Effect_No = 0;
 	int EffectID = 0;
 
-	for (Effect_No = 0; Effect_No < EffectMax; Effect_No++)
+	for (Effect_No = 0; Effect_No < EFFECT_MAX; Effect_No++)
 	{
 		if (Effect[Effect_No].use == true)
 		{
 			EffectID = Effect[Effect_No].ID;
 
-			int EffectID = EffectCtrl.Manager->Play(EffectCtrl.Effect[WATER],
-				Effect->Ppos.x, Effect->Ppos.y, Effect->Ppos.z);
-
-			if (GetKeyboardRelease(DIK_P))
-			{
-				EffectCtrl.Manager->StopEffect(Effect[Effect_No].ID);
-				Effect[Effect_No].use = false;
-				continue;
-			}
 		}
 	}
 

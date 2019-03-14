@@ -9,12 +9,9 @@
 #include "Player.h"
 #include "Debugproc.h"
 #include "Game.h"
-<<<<<<< HEAD
 #include "Effect.h"
 #include "Sound.h"
-=======
 #include "Collision.h"
->>>>>>> Develop
 
 //*****************************************************************************
 // マクロ定義
@@ -127,10 +124,8 @@ void UpdateOnna(void)
 			// 使用している場合のみ更新
 			if (onnaWk[en].use)
 			{
-<<<<<<< HEAD
 				Play_Sound(SOUND_TYPE_KNOCK_DOWN, SOUND_PLAY_TYPE_PLAY);
 				onnaWk[en].use = false;
-=======
 				// エネミーの攻撃
 				EnemyAttack(charaWk->pos, &onnaWk[en], ONNA_XSCALE);
 
@@ -157,13 +152,13 @@ void UpdateOnna(void)
 						}
 					}
 				}
->>>>>>> Develop
 			}
-		}
-		else if ((!Flag) && (!onnaWk[en].use))
-		{
-			Check++;
-			Flag = true;
+			else if ((!Flag) && (!onnaWk[en].use))
+			{
+				Check++;
+				Flag = true;
+			}
+
 		}
 	}
 
@@ -172,7 +167,7 @@ void UpdateOnna(void)
 		UninitGame();
 		Set_Game_Index(GAME_TYPE_STAGE_BLACK_HOLE);
 		InitGame();
-		Update_Effect_Stage_Switch();
+		SetEffect(D3DXVECTOR3(0.0f, 0.0f, 0.0f), FireEffect);
 	}
 }
 
