@@ -267,7 +267,7 @@ bool HitCheckPToI(CHARA *Player, ITEM *Item)
 
 bool HitCheckIToE(ITEM *Item, ENEMY *Enemy)		// “Š‚°‚ç‚ê‚½ƒAƒCƒeƒ€‚Æ“G‚Æ‚Ì“–‚½‚è”»’è
 {
-	if (HitSphere(Item->pos, Enemy->pos, ITEM_GETVALUE, ONNA_XSCALE))
+	if (HitSphereToCircle(Item->pos, Enemy->pos, ITEM_GETVALUE, ONNA_XSCALE))
 	{
 		return true;
 	}

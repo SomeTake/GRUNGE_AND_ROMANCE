@@ -111,10 +111,6 @@ void UpdateOnna(void)
 {
 	CHARA *charaWk = GetPlayer(0);
 
-#ifdef _DEBUG
-	PrintDebugProc("攻撃フラグ %s", onnaWk[0].AttackFlag ? "true" : "false");
-	PrintDebugProc("位置決定フラグ %s", onnaWk[0].IdleFlag ? "true" : "false");
-#endif
 	for (int en = 0; en < ONNA_NUM; en++)
 	{
 		for (int pn = 0; pn < PLAYER_NUM; pn++, charaWk++)

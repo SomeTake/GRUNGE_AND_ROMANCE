@@ -12,7 +12,7 @@
 
 
 #define	HIT_CHECK_NUM	(13)								// 当たり判定の数
-#define ITEM_GETVALUE	(10.0f)								// アイテムを拾える範囲
+#define ITEM_GETVALUE	(20.0f)								// アイテムを拾える範囲
 #define ITEM_THROWED_SPEED	(5.0f)							// アイテムを投げた時のスピード
 
 #define ENEMY_DAMAGE	(10)								// 敵の攻撃ダメージ

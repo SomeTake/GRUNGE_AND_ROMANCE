@@ -10,6 +10,7 @@
 #include "Blackhole.h"
 #include "Collision.h"
 #include "Player.h"
+#include "Effect.h"
 
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
@@ -129,6 +130,7 @@ void UpdateYakiYaki(void)
 					{
 						yakiyakiWk[in].use = false;
 						Onna->HPzan -= Data[Throwitem].Damage;
+						SetEffect(yakiyakiWk[in].pos, HitEffect);
 					}
 				}
 
@@ -138,6 +140,7 @@ void UpdateYakiYaki(void)
 					{
 						yakiyakiWk[in].use = false;
 						Black->HPzan -= Data[Throwitem].Damage;
+						SetEffect(yakiyakiWk[in].pos, HitEffect);
 					}
 				}
 

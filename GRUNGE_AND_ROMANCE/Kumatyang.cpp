@@ -10,6 +10,7 @@
 #include "Blackhole.h"
 #include "Collision.h"
 #include "Player.h"
+#include "Effect.h"
 
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
@@ -132,6 +133,7 @@ void UpdateKumatyang(void)
 					{
 						kumatyangWk[in].use = false;
 						Onna->HPzan -= Data[Throwitem].Damage;
+						SetEffect(kumatyangWk[in].pos, HitEffect);
 					}
 				}
 
@@ -141,6 +143,7 @@ void UpdateKumatyang(void)
 					{
 						kumatyangWk[in].use = false;
 						Black->HPzan -= Data[Throwitem].Damage;
+						SetEffect(kumatyangWk[in].pos, HitEffect);
 					}
 				}
 

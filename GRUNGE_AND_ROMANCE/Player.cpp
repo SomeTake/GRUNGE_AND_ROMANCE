@@ -225,10 +225,6 @@ void UpdatePlayer(void)
 	ITEM *KumaWk = GetKumatyang(0);
 	ITEM *YakiWk = GetYakiYaki(0);
 
-#ifdef _DEBUG
-	PrintDebugProc("ヒットフラグ %s", playerWk[0].HitFrag ? "true" : "false");
-#endif
-
 	for (int pn = 0; pn < PLAYER_NUM; pn++)
 	{
 		// アニメーションを更新
@@ -406,13 +402,6 @@ void DrawPlayer(void)
 			// マテリアルをデフォルトに戻す
 			pDevice->SetMaterial(&matDef);
 
-#ifdef _DEBUG
-			for (int i = 0; i < HIT_CHECK_NUM; i++)
-			{
-				// プレイヤーの当たり判定用ボールを描画する
-				DrawCollision(&playerWk[pn].Collision[i]);
-			}
-#endif
 		}
 	}
 }
