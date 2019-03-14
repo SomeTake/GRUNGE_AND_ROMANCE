@@ -13,13 +13,15 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define CHARA_XFILE			("data/MODEL/Girl.x")
+#define P1_XFILE			("data/MODEL/Togen.x")
+#define P2_XFILE			("data/MODEL/Kyo.x")
 #define PLAYER_NUM		(2)									// プレイヤーの数
 
-#define FIRST_PLAYER_POS	D3DXVECTOR3(0.0f, 0.0f, 0.0f)	// 初期位置
+#define P1_PLAYER_POS	D3DXVECTOR3(10.0f, 0.0f, -10.0f)	// 初期位置
+#define P2_PLAYER_POS	D3DXVECTOR3(-10.0f, 0.0f, 10.0f)	// 初期位置
 #define PLAYER_HP_MAX	(200)
 
-#define VALUE_FRONTWALK	(1.50f)								// 前歩き移動量
+#define VALUE_FRONTWALK	(3.00f)								// 前歩き移動量
 #define	VALUE_SIDESTEP	(1.00f)								// 横歩き移動量
 #define VALUE_HALF		(0.5f)								// 何らかの値を半分にするために掛ける
 
@@ -94,19 +96,19 @@ static BATTLEDATA Data[AnimMax] = {
 // 当たり判定を発生させる場所
 static const char* CharaHitPos[] =
 {
-	"Hips",				// 尻
-	"Neck",				// 首
-	"Head",				// 頭
-	"LeftShoulder",		// 左肩
-	"RightShoulder",	// 右肩
-	"LeftHand",			// 左手
-	"RightHand",		// 右手
-	"LeftFoot",			// 左足
-	"RightFoot",		// 右足
-	"LeftForeArm",		// 左肘
-	"RightForeArm",		// 右肘
-	"LeftLeg",			// 左膝
-	"RightLeg"			// 右膝
+	"mixamorig_Hips",				// 尻
+	"mixamorig_Neck",				// 首
+	"mixamorig_Head",				// 頭
+	"mixamorig_LeftShoulder",		// 左肩
+	"mixamorig_RightShoulder",		// 右肩
+	"mixamorig_LeftHand",			// 左手
+	"mixamorig_RightHand",			// 右手
+	"mixamorig_LeftFoot",			// 左足
+	"mixamorig_RightFoot",			// 右足
+	"mixamorig_LeftForeArm",		// 左肘
+	"mixamorig_RightForeArm",		// 右肘
+	"mixamorig_LeftLeg",			// 左膝
+	"mixamorig_RightLeg"			// 右膝
 };
 
 // 当たり判定発生場所と連動（CharaHitPos）
@@ -133,16 +135,16 @@ static float HitRadius[] =
 	10.0f,
 	10.0f,
 	10.0f,
-	5.0f,
-	5.0f,
-	5.0f,
-	5.0f,
-	7.0f,
-	7.0f,
-	5.0f,
-	5.0f,
-	7.0f,
-	7.0f
+	10.0f,
+	10.0f,
+	10.0f,
+	10.0f,
+	10.0f,
+	10.0f,
+	10.0f,
+	10.0f,
+	10.0f,
+	10.0f
 };
 
 //*****************************************************************************

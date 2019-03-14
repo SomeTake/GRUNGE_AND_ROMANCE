@@ -6,6 +6,7 @@
 //=============================================================================
 #include "Collision.h"
 #include "Player.h"
+#include "Onna.h"
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -166,7 +167,7 @@ bool HitSphere(D3DXVECTOR3 AttackPos, D3DXVECTOR3 DefendPos, float AttackRange, 
 // 当たり判定
 // AttackPos = 攻撃側中心位置, DefendPos = 防御側中心位置, AttackRange = 攻撃側半径, DefendPos = 防御側半径
 //=====================================================================================================
-bool HitSpheretoCircle(D3DXVECTOR3 AttackPos, D3DXVECTOR3 DefendPos, float AttackRange, float DefendRange)
+bool HitSphereToCircle(D3DXVECTOR3 AttackPos, D3DXVECTOR3 DefendPos, float AttackRange, float DefendRange)
 {
 	// 当たり判定の中心の距離を測る
 	float DistX = AttackPos.x - DefendPos.x;
@@ -200,34 +201,39 @@ bool HitCheckPToE(CHARA *Player, ENEMY *Enemy)
 	switch (Player->Animation->CurrentAnimID)
 	{
 	case Jab:
-		if (HitSpheretoCircle(Player->Collision[LeftHand].pos, Enemy->pos,
+		if (HitSphereToCircle(Player->Collision[LeftHand].pos, Enemy->pos,
 			Player->Collision[LeftHand].scl.x, Enemy->scl.x) == true)
 		{
 			return true;
 		}
 		break;
 	case Straight:
-		if (HitSpheretoCircle(Player->Collision[RightHand].pos, Enemy->pos,
+		if (HitSphereToCircle(Player->Collision[RightHand].pos, Enemy->pos,
 			Player->Collision[RightHand].scl.x, Enemy->scl.x) == true)
 		{
 			return true;
 		}
 		break;
 	case Upper:
-		if (HitSpheretoCircle(Player->Collision[LeftHand].pos, Enemy->pos,
+		if (HitSphereToCircle(Player->Collision[LeftHand].pos, Enemy->pos,
 			Player->Collision[LeftHand].scl.x, Enemy->scl.x) == true)
 		{
 			return true;
 		}
 		break;
 	case Kick:
-		if (HitSpheretoCircle(Player->Collision[RightFoot].pos, Enemy->pos,
+		if (HitSphereToCircle(Player->Collision[RightFoot].pos, Enemy->pos,
 			Player->Collision[RightFoot].scl.x, Enemy->scl.x) == true)
 		{
 			return true;
 		}
 		break;
 	case Attackitem:
+		if (HitSphereToCircle(Player->Collision[RightFoot].pos, Enemy->pos,
+			Player->Collision[RightFoot].scl.x, Enemy->scl.x) == true)
+		{
+			return true;
+		}
 		break;
 	case Throwitem:
 		break;
@@ -235,5 +241,45 @@ bool HitCheckPToE(CHARA *Player, ENEMY *Enemy)
 		break;
 	}
 
+	return false;
+}
+
+//=====================================================================================================
+// プレイヤーとアイテムとの当たり判定
+// 引数：Player構造体　Item構造体
+//=====================================================================================================
+bool HitCheckPToI(CHARA *Player, ITEM *Item)
+{
+	switch (Player->Animation->CurrentAnimID)
+	{
+	case Pickup:
+		if (HitSphere(Player->Collision[RightHand].pos, Item->pos, Player->Collision[RightHand].scl.x, ITEM_GETVALUE))
+		{
+			return true;
+		}
+		break;
+	default:
+		break;
+	}
+
+	return false;
+}
+
+bool HitCheckIToE(ITEM *Item, ENEMY *Enemy)		// 投げられたアイテムと敵との当たり判定
+{
+	if (HitSphere(Item->pos, Enemy->pos, ITEM_GETVALUE, ONNA_XSCALE))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool HitCheckEToP(ENEMY *Enemy, CHARA *Player)		// 敵の攻撃とプレイヤーとの当たり判定
+{
+	if (HitSphere(Enemy->pos, Player->pos, ONNA_XSCALE, HitRadius[Hips]))
+	{
+		return true;
+	}
 	return false;
 }

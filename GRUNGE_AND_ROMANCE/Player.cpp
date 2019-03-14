@@ -15,7 +15,14 @@
 #include "Blackhole.h"
 #include "Debugproc.h"
 #include "Game.h"
+<<<<<<< HEAD
 #include "Sound.h"
+=======
+#include "Effect.h"
+#include "Babel.h"
+#include "Kumatyang.h"
+#include "YakiYaki.h"
+>>>>>>> Develop
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -38,9 +45,16 @@ HRESULT InitPlayer(int type)
 	for (int pn = 0; pn < PLAYER_NUM; pn++)
 	{
 		// 位置・回転・スケールの初期設定
-		playerWk[pn].pos = FIRST_PLAYER_POS;
+		if (pn == 0)
+		{
+			playerWk[pn].pos = P1_PLAYER_POS;
+		}
+		else if (pn == 1)
+		{
+			playerWk[pn].pos = P2_PLAYER_POS;
+		}
 		playerWk[pn].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		playerWk[pn].scl = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+		playerWk[pn].scl = D3DXVECTOR3(0.35f, 0.35f, 0.35f);
 		playerWk[pn].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 		// ステータス等の初期設定
@@ -57,9 +71,19 @@ HRESULT InitPlayer(int type)
 			playerWk[pn].Animation = CreateAnimationObject();
 
 			// xFileの読み込み
-			if (FAILED(Load_xFile(playerWk[pn].Animation, CHARA_XFILE, "Player")))
+			if (pn == 0)
 			{
-				return E_FAIL;
+				if (FAILED(Load_xFile(playerWk[pn].Animation, P1_XFILE, "P1")))
+				{
+					return E_FAIL;
+				}
+			}
+			else if (pn == 1)
+			{
+				if (FAILED(Load_xFile(playerWk[pn].Animation, P2_XFILE, "P2")))
+				{
+					return E_FAIL;
+				}
 			}
 
 			// AnimationCallbackをセットする
@@ -196,8 +220,14 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
+	// エネミー構造体のポインタを取得
 	ENEMY *OnnaWk = GetOnna(0);
 	ENEMY *BlackholeWk = GetBlackhole(0);
+
+	// アイテム構造体のポインタを取得
+	ITEM *BabelWk = GetBabel(0);
+	ITEM *KumaWk = GetKumatyang(0);
+	ITEM *YakiWk = GetYakiYaki(0);
 
 #ifdef _DEBUG
 	PrintDebugProc("ヒットフラグ %s", playerWk[0].HitFrag ? "true" : "false");
@@ -262,7 +292,76 @@ void UpdatePlayer(void)
 					}
 				}
 			}
+
+			// アイテムとの当たり判定
+			// バーベル
+			for (int num = 0; num < BABEL_NUM; num++)
+			{
+				if (BabelWk[num].pickup == false)
+				{
+					if (HitCheckPToI(&playerWk[pn], &BabelWk[num]))
+					{
+						// 当たったとき
+						playerWk[pn].UseItem = true;
+						playerWk[pn].ItemIdx = SetBabel(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
+						playerWk[pn].ItemCategory = ItemBabel;
+					}
+				}
+			}
+
+			// クマちゃん
+			for (int num = 0; num < KUMATYANG_NUM; num++)
+			{
+				if (KumaWk[num].pickup == false)
+				{
+					if (HitCheckPToI(&playerWk[pn], &KumaWk[num]))
+					{
+						// 当たったとき
+						playerWk[pn].UseItem = true;
+						playerWk[pn].ItemIdx = SetKumatyang(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
+						playerWk[pn].ItemCategory = ItemKumatyang;
+					}
+				}
+			}
+
+			// ヤキヤキくん
+			for (int num = 0; num < YAKIYAKI_NUM; num++)
+			{
+				if (YakiWk[num].pickup == false)
+				{
+					if (HitCheckPToI(&playerWk[pn], &YakiWk[num]))
+					{
+						// 当たったとき
+						playerWk[pn].UseItem = true;
+						playerWk[pn].ItemIdx = SetYakiYaki(playerWk[pn].Collision[RightHand].pos, playerWk[pn].Collision[RightHand].rot);
+						playerWk[pn].ItemCategory = ItemYakiYaki;
+					}
+				}
+			}
+
 		}
+
+
+		// アイテムを所有している場合位置を右手の座標に合わせる
+		if (playerWk[pn].UseItem)
+		{
+			switch (playerWk[pn].ItemCategory)
+			{
+			case ItemBabel:
+				SetPositionBabel(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].pos);
+				SetRotationBabel(playerWk[pn].ItemIdx, playerWk[pn].rot);
+				break;
+			case ItemKumatyang:
+				SetPositionKumatyang(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].pos);
+				SetRotationKumatyang(playerWk[pn].ItemIdx, playerWk[pn].rot);
+				break;
+			case ItemYakiYaki:
+				SetPositionYakiYaki(playerWk[pn].ItemIdx, playerWk[pn].Collision[RightHand].pos);
+				SetRotationYakiYaki(playerWk[pn].ItemIdx, playerWk[pn].rot);
+				break;
+			}
+		}
+
 	}
 }
 
@@ -417,6 +516,18 @@ void ControlPlayer(int pn)
 			if (playerWk[pn].UseItem == true)
 			{
 				playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Throwitem, Data[Throwitem].Spd);
+				switch (playerWk[pn].ItemCategory)
+				{
+				case ItemBabel:
+					SetThrowedBabel(playerWk[pn].ItemIdx);
+					break;
+				case ItemKumatyang:
+					SetThrowedKumatyang(playerWk[pn].ItemIdx);
+					break;
+				case ItemYakiYaki:
+					SetThrowedYakiYaki(playerWk[pn].ItemIdx);
+					break;
+				}
 			}
 			else
 			{
@@ -466,6 +577,18 @@ void ControlPlayer(int pn)
 			if (playerWk[pn].UseItem == true)
 			{
 				playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Throwitem, Data[Throwitem].Spd);
+				switch (playerWk[pn].ItemCategory)
+				{
+				case ItemBabel:
+					SetThrowedBabel(playerWk[pn].ItemIdx);
+					break;
+				case ItemKumatyang:
+					SetThrowedKumatyang(playerWk[pn].ItemIdx);
+					break;
+				case ItemYakiYaki:
+					SetThrowedYakiYaki(playerWk[pn].ItemIdx);
+					break;
+				}
 			}
 			else
 			{
@@ -514,6 +637,18 @@ void ControlPlayer(int pn)
 			if (playerWk[pn].UseItem == true)
 			{
 				playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Throwitem, Data[Throwitem].Spd);
+				switch (playerWk[pn].ItemCategory)
+				{
+				case ItemBabel:
+					SetThrowedBabel(playerWk[pn].ItemIdx);
+					break;
+				case ItemKumatyang:
+					SetThrowedKumatyang(playerWk[pn].ItemIdx);
+					break;
+				case ItemYakiYaki:
+					SetThrowedYakiYaki(playerWk[pn].ItemIdx);
+					break;
+				}
 			}
 			else
 			{
@@ -601,8 +736,14 @@ void ControlPlayer(int pn)
 		// アニメーション終了で待機に戻る
 		if (playerWk[pn].Animation->MotionEnd == true)
 		{
-			playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Idleitem, Data[Idleitem].Spd);
-			playerWk[pn].UseItem = true;
+			if (playerWk[pn].UseItem)
+			{
+				playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Idleitem, Data[Idleitem].Spd);
+			}
+			else
+			{
+				playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Idle, Data[Idle].Spd);
+			}
 			playerWk[pn].HitFrag = false;
 		}
 		break;
@@ -621,6 +762,18 @@ void ControlPlayer(int pn)
 		else if (GetKeyboardTrigger(DIK_N) || IsButtonTriggered(pn, BUTTON_C))
 		{
 			playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Throwitem, Data[Throwitem].Spd);
+			switch (playerWk[pn].ItemCategory)
+			{
+			case ItemBabel:
+					SetThrowedBabel(playerWk[pn].ItemIdx);
+				break;
+			case ItemKumatyang:
+					SetThrowedKumatyang(playerWk[pn].ItemIdx);
+				break;
+			case ItemYakiYaki:
+					SetThrowedYakiYaki(playerWk[pn].ItemIdx);
+				break;
+			}
 		}
 		// 前進
 		else if (GetKeyboardPress(playerWk[pn].reverse == false ? DIK_RIGHT : DIK_LEFT)
@@ -653,11 +806,11 @@ void ControlPlayer(int pn)
 		}
 		break;
 	case Throwitem:
+		playerWk[pn].UseItem = false;
 		// アニメーション終了で待機に戻る
 		if (playerWk[pn].Animation->MotionEnd == true)
 		{
 			playerWk[pn].Animation->ChangeAnimation(playerWk[pn].Animation, Idle, Data[Idle].Spd);
-			playerWk[pn].UseItem = false;
 			playerWk[pn].HitFrag = false;
 		}
 		break;
@@ -734,6 +887,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[LeftHand].pos, HitEffect);
 		break;
 	case Straight:
 		// ダメージ
@@ -741,6 +895,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[RightHand].pos, HitEffect);
 		break;
 	case Upper:
 		// ダメージ
@@ -748,6 +903,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_PUNCH, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+		SetEffect(playerWk[pn].Collision[LeftHand].pos, HitEffect);
 		break;
 	case Kick:
 		// ダメージ
@@ -755,9 +911,13 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_KICK, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+<<<<<<< HEAD
 		break;
 	case Pickup:
 		Play_Sound(SOUND_TYPE_ITEM_PICK, SOUND_PLAY_TYPE_PLAY);
+=======
+		SetEffect(playerWk[pn].Collision[RightFoot].pos, HitEffect);
+>>>>>>> Develop
 		break;
 	case Attackitem:
 		// ダメージ
@@ -765,6 +925,7 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_ITEM, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+<<<<<<< HEAD
 		break;
 	case Throwitem:
 		// ダメージ
@@ -772,9 +933,14 @@ void HitAction(int pn, ENEMY *enemy)
 		// SE
 		Play_Sound(SOUND_TYPE_ATTACK_ITEM, SOUND_PLAY_TYPE_PLAY);
 		// エフェクト
+=======
+		SetEffect(playerWk[pn].Collision[RightFoot].pos, HitEffect);
+>>>>>>> Develop
 		break;
 	default:
 		break;
 	}
 
+	// エネミーの状態変更
+	enemy->AttackFlag = false;
 }

@@ -24,8 +24,13 @@ void UpdateCollision(COLLISION *Collision, D3DXMATRIX Matrix);
 void DrawCollision(COLLISION *Collision);
 
 bool HitSphere(D3DXVECTOR3 AttackPos, D3DXVECTOR3 DefendPos, float AttackRange, float DefendRange);
-bool HitCheckPToE(CHARA *Player, ENEMY *Enemy);		// プレイヤーの攻撃とエネミーの当たり判定
-bool HitSpheretoCircle(D3DXVECTOR3 AttackPos, D3DXVECTOR3 DefendPos, float AttackRange, float DefendRange);
+bool HitSphereToCircle(D3DXVECTOR3 AttackPos, D3DXVECTOR3 DefendPos, float AttackRange, float DefendRange);
 
+bool HitCheckPToE(CHARA *Player, ENEMY *Enemy);		// プレイヤーの攻撃とエネミーの当たり判定
+bool HitCheckPToI(CHARA *Player, ITEM *Item);		// プレイヤーとアイテムの当たり判定
+
+bool HitCheckIToE(ITEM *Item, ENEMY *Enemy);		// 投げられたアイテムと敵との当たり判定
+
+bool HitCheckEToP(ENEMY *Enemy, CHARA *Player);		// 敵の攻撃とプレイヤーとの当たり判定
 
 #endif

@@ -12,8 +12,8 @@
 //*****************************************************************************
 enum EffectType
 {
-	FIRE,
-	WATER,
+	HitEffect,
+	FireEffect,
 };
 
 
@@ -31,9 +31,6 @@ typedef struct
 typedef struct
 {
 	D3DXVECTOR3				pos;
-	D3DXVECTOR3				rot;
-	D3DXVECTOR3				scl;
-	D3DXVECTOR3				Ppos;
 	int						ID;
 	int						EffectType;
 	bool					use;

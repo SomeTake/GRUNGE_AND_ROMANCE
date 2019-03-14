@@ -13,7 +13,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define EffectMax (1)
+#define EFFECT_MAX (1)
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -23,7 +23,7 @@
 // グローバル変数
 //*****************************************************************************
 EFFECTCONTROLLER		EffectCtrl;
-EFFECT					Effect[EffectMax];
+EFFECT					Effect[EFFECT_MAX];
 
 static const EFK_CHAR* EffectFileName[] =
 {
@@ -42,12 +42,9 @@ HRESULT InitEffect(bool FirstInit)
 	LPDIRECT3DDEVICE9 Device = GetDevice();
 	int Effect_No = 0;
 
-	for (Effect_No = 0; Effect_No < EffectMax; Effect_No++)
+	for (Effect_No = 0; Effect_No < EFFECT_MAX; Effect_No++)
 	{
 		Effect[Effect_No].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);;
-		Effect[Effect_No].Ppos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);;
-		Effect[Effect_No].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);;
-		Effect[Effect_No].scl = D3DXVECTOR3(1.0f, 1.0f, 1.0f);;
 		Effect[Effect_No].ID = -1;
 		Effect[Effect_No].EffectType = -1;
 		Effect[Effect_No].use = true;
@@ -134,35 +131,18 @@ void UpdateEffect(void)
 	int Effect_No = 0;
 	int EffectID = 0;
 
-	for (Effect_No = 0; Effect_No < EffectMax; Effect_No++)
+	for (Effect_No = 0; Effect_No < EFFECT_MAX; Effect_No++)
 	{
+		// 使用しているもののみ更新
 		if (Effect[Effect_No].use == true)
 		{
 			EffectID = Effect[Effect_No].ID;
-			if (GetKeyboardTrigger(DIK_O))
+			// 1ループしたら終了
+			if (EffectCtrl.Manager->GetShown(EffectID) == false)
 			{
-					int EffectID = EffectCtrl.Manager->Play(EffectCtrl.Effect[FIRE],
-						Effect->Ppos.x, Effect->Ppos.y, Effect->Ppos.z);
-
-					if (GetKeyboardRelease(DIK_O))
-					{
-						EffectCtrl.Manager->StopEffect(Effect[Effect_No].ID);
-						Effect[Effect_No].use = false;
-						continue;
-					}
-			}
-
-			else if (GetKeyboardTrigger(DIK_P))
-			{
-				int EffectID = EffectCtrl.Manager->Play(EffectCtrl.Effect[WATER],
-					Effect->Ppos.x, Effect->Ppos.y, Effect->Ppos.z);
-
-				if (GetKeyboardRelease(DIK_P))
-				{
-					EffectCtrl.Manager->StopEffect(Effect[Effect_No].ID);
-					Effect[Effect_No].use = false;
-					continue;
-				}
+				EffectCtrl.Manager->StopEffect(Effect[Effect_No].ID);
+				Effect[Effect_No].use = false;
+				continue;
 			}
 
 		}
@@ -246,7 +226,7 @@ void SetEffect(D3DXVECTOR3 Pos, int EffectType)
 {
 	int Effect_No = 0;
 
-	for (Effect_No = 0; Effect_No < EffectMax; Effect_No++)
+	for (Effect_No = 0; Effect_No < EFFECT_MAX; Effect_No++)
 	{
 		if (Effect[Effect_No].use == false)
 		{
